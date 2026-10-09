@@ -346,7 +346,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # 3 Intuitive Tabs for Farmer Accessibility
-tab_sample, tab_cam, tab_up = st.tabs([
+tab_sample, tab_cam, tab_upload = st.tabs([
     f"  {T['tab_samples']}  ",
     f"  {T['tab_camera']}  ",
     f"  {T['tab_upload']}  "
