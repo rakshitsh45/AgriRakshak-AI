@@ -47,12 +47,21 @@ UI_CONTENT = {
         * **इंटरनेट निर्भरता:** शून्य (100% एयर-गैप्ड)
         """,
         "processing_spinner": "आर्म चिप पर ऑन-डिवाइस विश्लेषण जारी है (विज़न + लामा)...",
-        "metric_crop": "फसल",
-        "metric_condition": "पहचानी गई बीमारी",
-        "metric_severity": "नुकसान की गंभीरता",
-        "metric_latency": "सिस्टम लेटेंसी",
+        "metric_crop": "🌾 फसल",
+        "metric_disease": "🩺 बीमारी / रोग",
+        "metric_type": "🔬 रोग का प्रकार",
+        "metric_severity": "⚠️ नुकसान की गंभीरता",
+        "metric_latency": "⚡ सिस्टम लेटेंसी",
         "conf_label": "सटीकता",
         "lesion_label": "प्रभावित पत्ती",
+        "pathogen_map": {
+            "Fungal": "🍄 कवक जनित (Fungus)",
+            "Oomycete": "🍄 फफूंद जनित (Oomycete)",
+            "Bacterial": "🦠 जीवाणु जनित (Bacteria)",
+            "Viral": "🧬 विषाणु जनित (Virus)",
+            "Pest": "🐛 कीट प्रकोप (Pest)",
+            "Healthy": "🌿 स्वस्थ पत्ता (Healthy)"
+        },
         "orig_img_header": "🍃 पौधे की मूल फोटो",
         "heatmap_header": "🎯 बीमारी विश्लेषण व हीटमैप",
         "heatmap_caption": "पीली रेखाएं और लाल उभार बीमारी से प्रभावित हिस्से को दर्शाते हैं",
@@ -98,12 +107,21 @@ UI_CONTENT = {
         * **Network Calls:** 0 bytes (100% Air-Gapped)
         """,
         "processing_spinner": "Processing on Arm Edge Core (Vision + Llama ExecuTorch)...",
-        "metric_crop": "Crop",
-        "metric_condition": "Identified Disease / Pest",
-        "metric_severity": "Damage Severity Level",
-        "metric_latency": "Total SoC Latency",
+        "metric_crop": "🌾 Crop",
+        "metric_disease": "🩺 Disease Name",
+        "metric_type": "🔬 Pathogen Type",
+        "metric_severity": "⚠️ Damage Severity",
+        "metric_latency": "⚡ SoC Latency",
         "conf_label": "Confidence",
         "lesion_label": "Lesion Area",
+        "pathogen_map": {
+            "Fungal": "🍄 Fungal",
+            "Oomycete": "🍄 Oomycete",
+            "Bacterial": "🦠 Bacterial",
+            "Viral": "🧬 Viral",
+            "Pest": "🐛 Pest Infestation",
+            "Healthy": "🌿 Healthy Tissue"
+        },
         "orig_img_header": "🍃 Original Leaf Capture",
         "heatmap_header": "🎯 Lesion Segmentation Heatmap",
         "heatmap_caption": "Yellow contours and red highlight indicate active necrotic lesions",
@@ -254,23 +272,24 @@ else:
         display_severity = T["severity_map"]["severe"]
     elif "healthy" in vis["severity"].lower():
         display_severity = T["severity_map"]["healthy"]
-    else:
-        display_severity = T["severity_map"]["moderate"]
+    display_pathogen = T["pathogen_map"].get(vis.get("pathology_type", "Healthy"), vis.get("pathology_type", "Healthy"))
 
-# 4 Top Metrics Cards
-m1, m2, m3, m4 = st.columns(4)
-with m1:
-    st.metric(label=T["metric_crop"], value=display_crop)
-with m2:
-    st.metric(label=T["metric_condition"], value=display_condition, delta=f"{T['conf_label']}: {vis['confidence_percent']}%")
-with m3:
-    st.metric(label=T["metric_severity"], value=display_severity, delta=f"{T['lesion_label']}: {vis['lesion_ratio_percent']}%")
-with m4:
-    st.metric(
-        label=T["metric_latency"],
-        value=f"{res['total_system_latency_ms']} ms",
-        delta=f"Vision: {vis['inference_time_ms']}ms | Llama: {telemetry['total_inference_time_sec']*1000:.0f}ms"
-    )
+    # 5 Dedicated Top Metrics Cards (Including Explicit Disease Column)
+    m1, m2, m3, m4, m5 = st.columns(5)
+    with m1:
+        st.metric(label=T["metric_crop"], value=display_crop)
+    with m2:
+        st.metric(label=T["metric_disease"], value=display_condition, delta=f"{T['conf_label']}: {vis['confidence_percent']}%")
+    with m3:
+        st.metric(label=T["metric_type"], value=display_pathogen)
+    with m4:
+        st.metric(label=T["metric_severity"], value=display_severity, delta=f"{T['lesion_label']}: {vis['lesion_ratio_percent']}%")
+    with m5:
+        st.metric(
+            label=T["metric_latency"],
+            value=f"{res['total_system_latency_ms']} ms",
+            delta=f"Vision: {vis['inference_time_ms']}ms | Llama: {telemetry['total_inference_time_sec']*1000:.0f}ms"
+        )
 
 st.divider()
 
