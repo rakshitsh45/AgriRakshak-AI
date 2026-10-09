@@ -39,27 +39,26 @@ class EdgeVisionEngine:
         """
         hsv = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2HSV)
         
-        # Mask 1: Leaf tissue extraction (exclude non-leaf background)
-        # Healthy green leaves typically have Hue between 25 and 95
-        lower_leaf = np.array([15, 20, 20])
-        upper_leaf = np.array([100, 255, 255])
+        # Mask 1: Leaf tissue extraction (covers green chlorophyll, brown necrosis, and yellow halos)
+        # Background is white/light gray (Sat < 25 or Val > 240)
+        lower_leaf = np.array([3, 25, 20])
+        upper_leaf = np.array([115, 255, 238])
         leaf_mask = cv2.inRange(hsv, lower_leaf, upper_leaf)
         
         total_leaf_pixels = np.count_nonzero(leaf_mask)
         if total_leaf_pixels == 0:
-            # Fallback if image has white background or non-standard lighting
             total_leaf_pixels = image_rgb.shape[0] * image_rgb.shape[1]
             leaf_mask = np.ones((image_rgb.shape[0], image_rgb.shape[1]), dtype=np.uint8) * 255
 
         # Mask 2: Diseased / necrotic / chlorotic lesions (yellowing, brown spots, dark necrosis, rust pustules)
-        # Necrotic browns/yellows/rusts: Hues 5-25 (brown/orange) or very dark/pale patches within leaf
-        lower_lesion1 = np.array([5, 40, 20])
-        upper_lesion1 = np.array([28, 255, 200])
+        # Hues 3 to 38 represent brown/orange/yellow/rust within leaf tissue
+        lower_lesion1 = np.array([3, 28, 20])
+        upper_lesion1 = np.array([38, 255, 255])
         lesion_mask1 = cv2.inRange(hsv, lower_lesion1, upper_lesion1)
 
         # Dark necrotic spots (value < 55 within leaf)
         lower_dark = np.array([0, 0, 15])
-        upper_dark = np.array([180, 255, 65])
+        upper_dark = np.array([180, 255, 60])
         dark_mask = cv2.inRange(hsv, lower_dark, upper_dark)
         dark_in_leaf = cv2.bitwise_and(dark_mask, leaf_mask)
 
@@ -74,7 +73,6 @@ class EdgeVisionEngine:
 
         lesion_pixels = np.count_nonzero(clean_lesions)
         lesion_ratio_percent = float((lesion_pixels / max(total_leaf_pixels, 1)) * 100.0)
-        # Clamp to realistic bounds
         lesion_ratio_percent = min(max(lesion_ratio_percent, 0.0), 95.0)
 
         # Generate visual overlay
@@ -141,9 +139,11 @@ class EdgeVisionEngine:
         # 4. Classification
         matched_class = None
         if class_hint:
+            clean_hint = class_hint.lower().replace("-", "_").replace(" ", "_")
             for c in self.labels:
-                name_key = f"{c['crop']}_{c['disease']}".lower()
-                if class_hint.lower() in name_key or c['disease'].lower() in class_hint.lower():
+                name_key = f"{c['crop']}_{c['disease']}".lower().replace("-", "_").replace(" ", "_")
+                disease_key = c['disease'].lower().replace("-", "_").replace(" ", "_")
+                if clean_hint in name_key or clean_hint in disease_key or name_key in clean_hint:
                     matched_class = c
                     break
 
@@ -184,46 +184,52 @@ class EdgeVisionEngine:
 
 def create_sample_leaf_image(scenario: str = "tomato_early_blight", width: int = 400, height: int = 400) -> np.ndarray:
     """
-    Synthesizes realistic botanical leaf images for testing and demonstration
-    with genuine green chlorophyll base and necrotic lesion patches.
+    Synthesizes realistic botanical leaf images with genuine green chlorophyll base
+    and realistic necrotic brown/yellow lesion patches in standard RGB.
     """
     img = np.full((height, width, 3), (245, 247, 245), dtype=np.uint8)  # Off-white background
     
     # Draw leaf silhouette (smooth ellipse)
     center = (width // 2, height // 2)
     axes = (width // 3, height // 2 - 20)
-    cv2.ellipse(img, center, axes, -15, 0, 360, (38, 145, 45), -1)  # Lush green base
+    cv2.ellipse(img, center, axes, -15, 0, 360, (45, 155, 55), -1)  # Lush green base
     
     # Leaf primary vein
-    cv2.line(img, (center[0] - 15, height - 30), (center[0] + 10, 30), (75, 175, 80), 3)
+    cv2.line(img, (center[0] - 15, height - 30), (center[0] + 10, 30), (80, 185, 85), 3)
 
     if scenario == "tomato_early_blight":
         # Target-board concentric rings in lower to mid section
-        spots = [(center[0] - 40, center[1] + 30, 22), (center[0] + 30, center[1] + 60, 28), (center[0] - 10, center[1] - 40, 18)]
+        spots = [(center[0] - 35, center[1] + 25, 24), (center[0] + 30, center[1] + 55, 28), (center[0] - 10, center[1] - 40, 20)]
         for cx, cy, rad in spots:
-            # Chlorotic yellow halo
-            cv2.circle(img, (cx, cy), rad + 8, (70, 190, 210), -1)
-            # Brown necrotic center
-            cv2.circle(img, (cx, cy), rad, (35, 65, 115), -1)
-            # Target ring
-            cv2.circle(img, (cx, cy), rad - 6, (20, 45, 80), 2)
+            # Yellow chlorotic halo (RGB: 220, 190, 40)
+            cv2.circle(img, (cx, cy), rad + 10, (220, 190, 40), -1)
+            # Brown necrotic center (RGB: 130, 65, 20)
+            cv2.circle(img, (cx, cy), rad, (130, 65, 20), -1)
+            # Target ring (darker ring: 85, 40, 15)
+            cv2.circle(img, (cx, cy), rad - 6, (85, 40, 15), 2)
     elif scenario == "tomato_late_blight":
         # Large water-soaked necrotic irregular patches
-        pts = np.array([[center[0]-70, center[1]], [center[0]-20, center[1]-80], [center[0]+40, center[1]-40], [center[0]+10, center[1]+60]], np.int32)
-        cv2.fillPoly(img, [pts], (25, 45, 75))
-        # Pale border
-        cv2.polylines(img, [pts], True, (60, 160, 180), 4)
+        pts = np.array([[center[0]-75, center[1]-20], [center[0]-20, center[1]-85], [center[0]+45, center[1]-35], [center[0]+15, center[1]+65], [center[0]-40, center[1]+40]], np.int32)
+        # Yellowish water-soaked edge
+        cv2.fillPoly(img, [pts], (210, 180, 45))
+        # Large rotting dark necrotic center (RGB: 100, 50, 15)
+        inner_pts = (pts * 0.85 + np.array(center) * 0.15).astype(np.int32)
+        cv2.fillPoly(img, [inner_pts], (100, 50, 15))
     elif scenario == "corn_rust":
         # Golden-cinnamon powdery pustules scattered along leaf
         np.random.seed(42)
-        for _ in range(35):
-            rx = np.random.randint(center[0] - 60, center[0] + 60)
-            ry = np.random.randint(center[1] - 120, center[1] + 120)
-            cv2.circle(img, (rx, ry), 5, (20, 95, 180), -1)
+        for _ in range(45):
+            rx = int(np.random.normal(center[0], 28))
+            ry = int(np.random.normal(center[1], 70))
+            if 40 < rx < width - 40 and 40 < ry < height - 40:
+                cv2.circle(img, (rx, ry), 5, (225, 170, 35), -1)
+                cv2.circle(img, (rx, ry), 3, (155, 75, 15), -1)
     elif scenario == "cotton_blight":
         # Angular water-soaked lesions turning dark brown
-        pts = np.array([[center[0]-30, center[1]-20], [center[0]+5, center[1]-40], [center[0]+35, center[1]-10], [center[0], center[1]+30]], np.int32)
-        cv2.fillPoly(img, [pts], (25, 45, 65))
+        pts = np.array([[center[0]-40, center[1]-30], [center[0]+10, center[1]-50], [center[0]+45, center[1]-15], [center[0]+5, center[1]+35]], np.int32)
+        cv2.fillPoly(img, [pts], (215, 175, 45))
+        inner_pts = (pts * 0.8 + np.array(center) * 0.2).astype(np.int32)
+        cv2.fillPoly(img, [inner_pts], (115, 55, 20))
     # else healthy leaf remains pure green
 
     return img

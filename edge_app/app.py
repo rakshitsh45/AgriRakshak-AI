@@ -200,6 +200,28 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+if "active_sample" not in st.session_state:
+    st.session_state["active_sample"] = "tomato_early_blight"
+
+# 1-Click Plant Selector on Main Page
+st.markdown("##### " + ("🌿 त्वरित फसल व बीमारी चयन (1-Click Plant Switcher):" if selected_lang == "hindi" else "🌿 1-Click Fast Crop Switcher:"))
+q1, q2, q3, q4, q5 = st.columns(5)
+with q1:
+    if st.button("🍅 " + ("टमाटर (अगेती)" if selected_lang == "hindi" else "Tomato (Early)"), use_container_width=True):
+        st.session_state["active_sample"] = "tomato_early_blight"
+with q2:
+    if st.button("🥔 " + ("टमाटर (पछेती)" if selected_lang == "hindi" else "Tomato (Late)"), use_container_width=True):
+        st.session_state["active_sample"] = "tomato_late_blight"
+with q3:
+    if st.button("🌽 " + ("मक्का (रतुआ)" if selected_lang == "hindi" else "Corn (Rust)"), use_container_width=True):
+        st.session_state["active_sample"] = "corn_rust"
+with q4:
+    if st.button("🌱 " + ("कपास (झुलसा)" if selected_lang == "hindi" else "Cotton (Blight)"), use_container_width=True):
+        st.session_state["active_sample"] = "cotton_blight"
+with q5:
+    if st.button("🌾 " + ("गेहूं (स्वस्थ)" if selected_lang == "hindi" else "Wheat (Healthy)"), use_container_width=True):
+        st.session_state["active_sample"] = "healthy_wheat"
+
 # Sidebar Input Options
 st.sidebar.header(T["input_header"])
 input_mode = st.sidebar.radio(
@@ -208,16 +230,21 @@ input_mode = st.sidebar.radio(
     index=0
 )
 
-sample_choice = None
+sample_choice = st.session_state["active_sample"]
 uploaded_file = None
 camera_file = None
 
 if input_mode == T["input_modes"][0]:
+    # Match default index from session_state
+    sample_keys = [s[0] for s in T["samples"]]
+    cur_idx = sample_keys.index(sample_choice) if sample_choice in sample_keys else 0
     sample_choice = st.sidebar.selectbox(
         T["sample_dropdown_label"],
         T["samples"],
+        index=cur_idx,
         format_func=lambda x: x[1]
     )[0]
+    st.session_state["active_sample"] = sample_choice
 elif input_mode == T["input_modes"][1]:
     uploaded_file = st.sidebar.file_uploader(T["upload_label"], type=["jpg", "jpeg", "png"])
 else:
