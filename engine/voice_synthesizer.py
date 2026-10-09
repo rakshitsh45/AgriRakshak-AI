@@ -7,56 +7,71 @@ Provides:
 - PCM WAV file synthesizer for local speaker hardware playback
 """
 
+import io
 import os
 import wave
 import math
 import struct
 import logging
-from typing import Optional
+from typing import Optional, Tuple
 
 logger = logging.getLogger("AgriVoice")
 
 class EdgeVoiceSynthesizer:
     def __init__(self, output_dir: Optional[str] = None):
         if output_dir is None:
-            output_dir = os.path.join(os.path.dirname(__file__), "..", "edge_app", "audio_cache")
-        self.output_dir = output_dir
-        os.makedirs(self.output_dir, exist_ok=True)
+            output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "edge_app", "audio_cache"))
+        self.output_dir = os.path.abspath(output_dir)
+        try:
+            os.makedirs(self.output_dir, exist_ok=True)
+        except Exception:
+            pass
 
-    def generate_offline_audio(self, text: str, lang: str = "hi", filename: str = "advisory_speech.wav") -> str:
+    def generate_offline_audio(self, text: str, lang: str = "hi", filename: str = "advisory_speech.wav") -> Tuple[str, bytes]:
         """
         Synthesizes an audio stream/file for offline playback on edge speakers.
-        Generates a valid audio waveform with audible tone markers and voice prompt cue.
+        Generates in-memory WAV bytes to eliminate OS file-locking conflicts.
         """
-        output_file = os.path.join(self.output_dir, filename)
+        output_file = os.path.abspath(os.path.join(self.output_dir, filename))
         
         # Audio parameters: 16-bit PCM, 22050 Hz, Mono
         sample_rate = 22050
         duration_sec = 2.5
         total_samples = int(sample_rate * duration_sec)
 
-        # Generate a gentle audible chime / tone sequence (C-major harmonic sequence for alert)
-        with wave.open(output_file, "w") as wav_out:
-            wav_out.setnchannels(1)  # Mono
-            wav_out.setsampwidth(2)  # 16-bit
-            wav_out.setframerate(sample_rate)
+        # Generate audio buffer completely in memory
+        buf = io.BytesIO()
+        try:
+            with wave.open(buf, "wb") as wav_out:
+                wav_out.setnchannels(1)  # Mono
+                wav_out.setsampwidth(2)  # 16-bit
+                wav_out.setframerate(sample_rate)
 
-            samples = []
-            frequencies = [440.0, 554.37, 659.25, 880.0]  # A4, C#5, E5, A5
-            tone_len = total_samples // len(frequencies)
+                samples = []
+                frequencies = [440.0, 554.37, 659.25, 880.0]  # A4, C#5, E5, A5
+                tone_len = total_samples // len(frequencies)
 
-            for i, freq in enumerate(frequencies):
-                for t in range(tone_len):
-                    # Envelope dampening
-                    envelope = math.exp(-3.5 * (t / tone_len))
-                    val = 0.35 * envelope * math.sin(2.0 * math.pi * freq * (t / sample_rate))
-                    int_val = int(val * 32767.0)
-                    samples.append(struct.pack("<h", int_val))
+                for i, freq in enumerate(frequencies):
+                    for t in range(tone_len):
+                        envelope = math.exp(-3.5 * (t / tone_len))
+                        val = 0.35 * envelope * math.sin(2.0 * math.pi * freq * (t / sample_rate))
+                        int_val = int(val * 32767.0)
+                        samples.append(struct.pack("<h", int_val))
 
-            wav_out.writeframes(b"".join(samples))
+                wav_out.writeframes(b"".join(samples))
+        except Exception as e:
+            logger.warning(f"Error encoding WAV in memory: {e}")
 
-        logger.info("Saved offline audio advisory alert: %s", output_file)
-        return output_file
+        wav_bytes = buf.getvalue()
+
+        # Best-effort disk sync (never fail if locked by browser on Windows)
+        try:
+            with open(output_file, "wb") as f:
+                f.write(wav_bytes)
+        except Exception as e:
+            logger.debug(f"Audio cache file locked or in-use by browser (safe to ignore): {e}")
+
+        return output_file, wav_bytes
 
     def get_html5_speech_js(self, text: str, lang: str = "hi-IN", button_label: Optional[str] = None) -> str:
         """

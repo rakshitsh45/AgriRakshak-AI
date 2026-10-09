@@ -51,7 +51,7 @@ class AgriRakshakPipeline:
         )
 
         # Phase 3: Voice Advisory Synthesis
-        audio_file = self.voice_synthesizer.generate_offline_audio(
+        audio_file, audio_bytes = self.voice_synthesizer.generate_offline_audio(
             advisory_result["audio_speech_text"],
             lang="hi" if language == "hindi" else "en"
         )
@@ -66,6 +66,7 @@ class AgriRakshakPipeline:
             "vision": vision_result,
             "advisory": advisory_result,
             "audio_file": audio_file,
+            "audio_bytes": audio_bytes,
             "audio_html": audio_html,
             "total_system_latency_ms": round(total_latency_ms, 2)
         }

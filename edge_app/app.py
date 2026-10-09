@@ -287,10 +287,8 @@ with col_img2:
 # Spoken Audio Advisory
 st.subheader(T["audio_section_header"])
 st.markdown(res["audio_html"], unsafe_allow_html=True)
-if os.path.exists(res["audio_file"]):
-    with open(res["audio_file"], "rb") as f:
-        audio_bytes = f.read()
-    st.audio(audio_bytes, format="audio/wav")
+if res.get("audio_bytes"):
+    st.audio(res["audio_bytes"], format="audio/wav")
 
 # Llama 3.2 Grounded Advisory
 st.subheader(T["advisory_section_header"])
