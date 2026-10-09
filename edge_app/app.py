@@ -255,41 +255,38 @@ telemetry = adv["telemetry"]
 if selected_lang == "hindi":
     display_crop = vis["crop"]
     display_condition = vis["hindi_name"]
-    if "mild" in vis["severity"].lower():
-        display_severity = T["severity_map"]["mild"]
-    elif "severe" in vis["severity"].lower():
-        display_severity = T["severity_map"]["severe"]
-    elif "healthy" in vis["severity"].lower():
-        display_severity = T["severity_map"]["healthy"]
-    else:
-        display_severity = T["severity_map"]["moderate"]
 else:
     display_crop = vis["crop"]
     display_condition = vis["disease"]
-    if "mild" in vis["severity"].lower():
-        display_severity = T["severity_map"]["mild"]
-    elif "severe" in vis["severity"].lower():
-        display_severity = T["severity_map"]["severe"]
-    elif "healthy" in vis["severity"].lower():
-        display_severity = T["severity_map"]["healthy"]
-    display_pathogen = T["pathogen_map"].get(vis.get("pathology_type", "Healthy"), vis.get("pathology_type", "Healthy"))
 
-    # 5 Dedicated Top Metrics Cards (Including Explicit Disease Column)
-    m1, m2, m3, m4, m5 = st.columns(5)
-    with m1:
-        st.metric(label=T["metric_crop"], value=display_crop)
-    with m2:
-        st.metric(label=T["metric_disease"], value=display_condition, delta=f"{T['conf_label']}: {vis['confidence_percent']}%")
-    with m3:
-        st.metric(label=T["metric_type"], value=display_pathogen)
-    with m4:
-        st.metric(label=T["metric_severity"], value=display_severity, delta=f"{T['lesion_label']}: {vis['lesion_ratio_percent']}%")
-    with m5:
-        st.metric(
-            label=T["metric_latency"],
-            value=f"{res['total_system_latency_ms']} ms",
-            delta=f"Vision: {vis['inference_time_ms']}ms | Llama: {telemetry['total_inference_time_sec']*1000:.0f}ms"
-        )
+sev_str = vis.get("severity", "").lower()
+if "mild" in sev_str:
+    display_severity = T["severity_map"]["mild"]
+elif "severe" in sev_str:
+    display_severity = T["severity_map"]["severe"]
+elif "healthy" in sev_str:
+    display_severity = T["severity_map"]["healthy"]
+else:
+    display_severity = T["severity_map"]["moderate"]
+
+display_pathogen = T["pathogen_map"].get(vis.get("pathology_type", "Healthy"), vis.get("pathology_type", "Healthy"))
+
+# 5 Dedicated Top Metrics Cards (Including Explicit Disease Column)
+m1, m2, m3, m4, m5 = st.columns(5)
+with m1:
+    st.metric(label=T["metric_crop"], value=display_crop)
+with m2:
+    st.metric(label=T["metric_disease"], value=display_condition, delta=f"{T['conf_label']}: {vis['confidence_percent']}%")
+with m3:
+    st.metric(label=T["metric_type"], value=display_pathogen)
+with m4:
+    st.metric(label=T["metric_severity"], value=display_severity, delta=f"{T['lesion_label']}: {vis['lesion_ratio_percent']}%")
+with m5:
+    st.metric(
+        label=T["metric_latency"],
+        value=f"{res['total_system_latency_ms']} ms",
+        delta=f"Vision: {vis['inference_time_ms']}ms | Llama: {telemetry['total_inference_time_sec']*1000:.0f}ms"
+    )
 
 st.divider()
 
