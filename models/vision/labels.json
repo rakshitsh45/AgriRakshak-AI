@@ -1,0 +1,276 @@
+{
+  "classes": [
+    {
+      "id": 0,
+      "crop": "Apple",
+      "disease": "Apple Scab",
+      "scientific_name": "Venturia inaequalis",
+      "type": "Fungal",
+      "hindi_name": "सेब की पपड़ी रोग (स्कैब)"
+    },
+    {
+      "id": 1,
+      "crop": "Apple",
+      "disease": "Black Rot",
+      "scientific_name": "Botryosphaeria obtusa",
+      "type": "Fungal",
+      "hindi_name": "सेब का काला सड़न रोग"
+    },
+    {
+      "id": 2,
+      "crop": "Apple",
+      "disease": "Cedar Apple Rust",
+      "scientific_name": "Gymnosporangium juniperi-virginianae",
+      "type": "Fungal",
+      "hindi_name": "सेब का गेरुई रोग (रस्ट)"
+    },
+    {
+      "id": 3,
+      "crop": "Apple",
+      "disease": "Healthy",
+      "scientific_name": "N/A",
+      "type": "Healthy",
+      "hindi_name": "स्वस्थ सेब का पत्ता"
+    },
+    {
+      "id": 4,
+      "crop": "Corn (Maize)",
+      "disease": "Cercospora Leaf Spot (Gray Leaf Spot)",
+      "scientific_name": "Cercospora zeae-maydis",
+      "type": "Fungal",
+      "hindi_name": "मक्का का ग्रे लीफ स्पॉट"
+    },
+    {
+      "id": 5,
+      "crop": "Corn (Maize)",
+      "disease": "Common Rust",
+      "scientific_name": "Puccinia sorghi",
+      "type": "Fungal",
+      "hindi_name": "मक्का का रतुआ रोग (कॉमन रस्ट)"
+    },
+    {
+      "id": 6,
+      "crop": "Corn (Maize)",
+      "disease": "Northern Leaf Blight",
+      "scientific_name": "Exserohilum turcicum",
+      "type": "Fungal",
+      "hindi_name": "मक्का का झुलसा रोग (नार्दर्न लीफ ब्लाइट)"
+    },
+    {
+      "id": 7,
+      "crop": "Corn (Maize)",
+      "disease": "Healthy",
+      "scientific_name": "N/A",
+      "type": "Healthy",
+      "hindi_name": "स्वस्थ मक्का"
+    },
+    {
+      "id": 8,
+      "crop": "Cotton",
+      "disease": "Bacterial Blight",
+      "scientific_name": "Xanthomonas citri pv. malvacearum",
+      "type": "Bacterial",
+      "hindi_name": "कपास का जीवाणु झुलसा रोग"
+    },
+    {
+      "id": 9,
+      "crop": "Cotton",
+      "disease": "Leaf Curl Virus",
+      "scientific_name": "Cotton leaf curl virus (CLCuV)",
+      "type": "Viral",
+      "hindi_name": "कपास का पत्ता मरोड़ रोग (लीफ कर्ल)"
+    },
+    {
+      "id": 10,
+      "crop": "Cotton",
+      "disease": "Bollworm Infestation",
+      "scientific_name": "Helicoverpa armigera",
+      "type": "Pest",
+      "hindi_name": "कपास की इल्ली (गुलाबी/अमेरिकन सुंडी)"
+    },
+    {
+      "id": 11,
+      "crop": "Cotton",
+      "disease": "Healthy",
+      "scientific_name": "N/A",
+      "type": "Healthy",
+      "hindi_name": "स्वस्थ कपास"
+    },
+    {
+      "id": 12,
+      "crop": "Potato",
+      "disease": "Early Blight",
+      "scientific_name": "Alternaria solani",
+      "type": "Fungal",
+      "hindi_name": "आलू का अगेती झुलसा रोग (अर्ली ब्लाइट)"
+    },
+    {
+      "id": 13,
+      "crop": "Potato",
+      "disease": "Late Blight",
+      "scientific_name": "Phytophthora infestans",
+      "type": "Oomycete",
+      "hindi_name": "आलू का पछेती झुलसा रोग (लेट ब्लाइट)"
+    },
+    {
+      "id": 14,
+      "crop": "Potato",
+      "disease": "Healthy",
+      "scientific_name": "N/A",
+      "type": "Healthy",
+      "hindi_name": "स्वस्थ आलू"
+    },
+    {
+      "id": 15,
+      "crop": "Rice (Paddy)",
+      "disease": "Bacterial Leaf Blight",
+      "scientific_name": "Xanthomonas oryzae",
+      "type": "Bacterial",
+      "hindi_name": "धान का जीवाणु झुलसा रोग"
+    },
+    {
+      "id": 16,
+      "crop": "Rice (Paddy)",
+      "disease": "Brown Spot",
+      "scientific_name": "Bipolaris oryzae",
+      "type": "Fungal",
+      "hindi_name": "धान का भूरा धब्बा रोग (ब्राउन स्पॉट)"
+    },
+    {
+      "id": 17,
+      "crop": "Rice (Paddy)",
+      "disease": "Leaf Blast",
+      "scientific_name": "Magnaporthe oryzae",
+      "type": "Fungal",
+      "hindi_name": "धान का झोंका रोग (ब्लास्ट)"
+    },
+    {
+      "id": 18,
+      "crop": "Rice (Paddy)",
+      "disease": "Stem Borer Infestation",
+      "scientific_name": "Scirpophaga incertulas",
+      "type": "Pest",
+      "hindi_name": "धान का तना छेदक कीट"
+    },
+    {
+      "id": 19,
+      "crop": "Rice (Paddy)",
+      "disease": "Healthy",
+      "scientific_name": "N/A",
+      "type": "Healthy",
+      "hindi_name": "स्वस्थ धान"
+    },
+    {
+      "id": 20,
+      "crop": "Tomato",
+      "disease": "Bacterial Spot",
+      "scientific_name": "Xanthomonas campestris",
+      "type": "Bacterial",
+      "hindi_name": "टमाटर का जीवाणु धब्बा रोग"
+    },
+    {
+      "id": 21,
+      "crop": "Tomato",
+      "disease": "Early Blight",
+      "scientific_name": "Alternaria solani",
+      "type": "Fungal",
+      "hindi_name": "टमाटर का अगेती झुलसा रोग (अर्ली ब्लाइट)"
+    },
+    {
+      "id": 22,
+      "crop": "Tomato",
+      "disease": "Late Blight",
+      "scientific_name": "Phytophthora infestans",
+      "type": "Oomycete",
+      "hindi_name": "टमाटर का पछेती झुलसा रोग (लेट ब्लाइट)"
+    },
+    {
+      "id": 23,
+      "crop": "Tomato",
+      "disease": "Leaf Mold",
+      "scientific_name": "Passalora fulva",
+      "type": "Fungal",
+      "hindi_name": "टमाटर का पत्ती फफूंद (लीफ मोल्ड)"
+    },
+    {
+      "id": 24,
+      "crop": "Tomato",
+      "disease": "Septoria Leaf Spot",
+      "scientific_name": "Septoria lycopersici",
+      "type": "Fungal",
+      "hindi_name": "टमाटर का सेप्टोरिया धब्बा रोग"
+    },
+    {
+      "id": 25,
+      "crop": "Tomato",
+      "disease": "Spider Mites (Two-spotted spider mite)",
+      "scientific_name": "Tetranychus urticae",
+      "type": "Pest",
+      "hindi_name": "टमाटर में लाल मकड़ी का प्रकोप (माइट्स)"
+    },
+    {
+      "id": 26,
+      "crop": "Tomato",
+      "disease": "Target Spot",
+      "scientific_name": "Corynespora cassiicola",
+      "type": "Fungal",
+      "hindi_name": "टमाटर का टारगेट स्पॉट"
+    },
+    {
+      "id": 27,
+      "crop": "Tomato",
+      "disease": "Tomato Yellow Leaf Curl Virus",
+      "scientific_name": "TYLCV",
+      "type": "Viral",
+      "hindi_name": "टमाटर का पीला पत्ती मरोड़ विषाणु (लीफ कर्ल)"
+    },
+    {
+      "id": 28,
+      "crop": "Tomato",
+      "disease": "Tomato Mosaic Virus",
+      "scientific_name": "ToMV",
+      "type": "Viral",
+      "hindi_name": "टमाटर का मोज़ेक वायरस"
+    },
+    {
+      "id": 29,
+      "crop": "Tomato",
+      "disease": "Healthy",
+      "scientific_name": "N/A",
+      "type": "Healthy",
+      "hindi_name": "स्वस्थ टमाटर"
+    },
+    {
+      "id": 30,
+      "crop": "Wheat",
+      "disease": "Brown Rust (Leaf Rust)",
+      "scientific_name": "Puccinia triticina",
+      "type": "Fungal",
+      "hindi_name": "गेहूं का भूरा रतुआ रोग (लीफ रस्ट)"
+    },
+    {
+      "id": 31,
+      "crop": "Wheat",
+      "disease": "Yellow Rust (Stripe Rust)",
+      "scientific_name": "Puccinia striiformis",
+      "type": "Fungal",
+      "hindi_name": "गेहूं का पीला रतुआ रोग (स्ट्राइप रस्ट)"
+    },
+    {
+      "id": 32,
+      "crop": "Wheat",
+      "disease": "Powdery Mildew",
+      "scientific_name": "Blumeria graminis",
+      "type": "Fungal",
+      "hindi_name": "गेहूं का चूर्णिल आसिता (पाउडरी मिल्ड्यू)"
+    },
+    {
+      "id": 33,
+      "crop": "Wheat",
+      "disease": "Healthy",
+      "scientific_name": "N/A",
+      "type": "Healthy",
+      "hindi_name": "स्वस्थ गेहूं"
+    }
+  ]
+}

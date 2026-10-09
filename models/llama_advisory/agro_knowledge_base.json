@@ -1,0 +1,217 @@
+{
+  "advisory_rules": {
+    "Tomato_Early Blight": {
+      "pathogen": "Alternaria solani",
+      "symptoms": "Dark brown to black concentric target-ring spots on older leaves, yellow halo.",
+      "severity_matrix": {
+        "Mild": {
+          "organic_treatment": "Spray Neem seed kernel extract (NSKE 5%) or Trichoderma viride (5g/L water). Remove lower infected leaves and destroy them.",
+          "chemical_treatment": "Preventive spray of Mancozeb 75% WP @ 2.0g/L water.",
+          "dosage_hindi": "नीम का तेल (5 मिली/लीटर पानी) या मैंकोज़ेब 75% WP (2 ग्राम/लीटर पानी)।",
+          "irrigation_advice": "Avoid overhead sprinkler irrigation; water at base in the morning."
+        },
+        "Moderate": {
+          "organic_treatment": "Copper hydroxide 77% WP @ 2g/L or Bordeaux mixture (1%) combined with cow urine spray (10%).",
+          "chemical_treatment": "Chlorothalonil 75% WP @ 2g/L OR Difenoconazole 25% EC @ 1ml/L water.",
+          "dosage_hindi": "डाइफेनोकोनाज़ोल 25% EC (1 मिली प्रति लीटर) या क्लोरोथैलोनिल 75% WP (2 ग्राम प्रति लीटर)।",
+          "irrigation_advice": "Ensure proper field drainage and mulch around base to prevent soil splash."
+        },
+        "Severe": {
+          "organic_treatment": "Emergency copper-based bactericide/fungicide spray after roguing out severely affected plants.",
+          "chemical_treatment": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC @ 1ml/L OR Tebuconazole 25.9% EC @ 1.5ml/L water. Repeat after 10 days.",
+          "dosage_hindi": "अज़ॉक्सीस्ट्रोबिन + डाइफेनोकोनाज़ोल (1 मिली/लीटर) या टेबुकोनाज़ोल (1.5 मिली/लीटर)। गंभीर पत्तों को काटकर जलाएं।",
+          "irrigation_advice": "Strictly withhold excess irrigation to lower field humidity."
+        }
+      },
+      "pre_harvest_interval_days": 7,
+      "cibrc_approved": true
+    },
+    "Tomato_Late Blight": {
+      "pathogen": "Phytophthora infestans",
+      "symptoms": "Water-soaked irregular greasy spots turning dark brown with white fungal mold underneath in humid conditions.",
+      "severity_matrix": {
+        "Mild": {
+          "organic_treatment": "Spray Copper Oxychloride 50% WP @ 2.5g/L water mixed with biological agent Pseudomonas fluorescens (10g/L).",
+          "chemical_treatment": "Metalaxyl 8% + Mancozeb 64% WP (Ridomil MZ) @ 2.5g/L water.",
+          "dosage_hindi": "मेटालेक्सिल + मैंकोज़ेब (रिडोमिल) 2.5 ग्राम प्रति लीटर पानी में तुरंत छिड़कें।",
+          "irrigation_advice": "Stop evening irrigations immediately; lower relative humidity in canopy."
+        },
+        "Moderate": {
+          "organic_treatment": "Bordeaux mixture (1%) spray covering both upper and lower leaf surfaces.",
+          "chemical_treatment": "Cymoxanil 8% + Mancozeb 64% WP @ 2g/L OR Dimethomorph 50% WP @ 1g/L water.",
+          "dosage_hindi": "साइमोक्सानिल + मैंकोज़ेब (2 ग्राम/लीटर) या डाइमर्थोमोर्फ 50% WP (1 ग्राम/लीटर)।",
+          "irrigation_advice": "Improve row ventilation; stake tomato plants to elevate leaves from wet soil."
+        },
+        "Severe": {
+          "organic_treatment": "Quarantine the infected patch, burn severely destroyed plants to prevent spore dispersal.",
+          "chemical_treatment": "Famoxadone 16.6% + Cymoxanil 22.1% SC @ 1ml/L OR Mandipropamid 23.4% SC @ 0.8ml/L water.",
+          "dosage_hindi": "मैंडिप्रोपामाइड (0.8 मिली/लीटर) या फैमोक्साडोन + साइमोक्सानिल (1 मिली/लीटर)। 7 दिनों बाद दूसरा छिड़काव करें।",
+          "irrigation_advice": "Cease irrigation for 48 hours unless plants show wilt."
+        }
+      },
+      "pre_harvest_interval_days": 5,
+      "cibrc_approved": true
+    },
+    "Potato_Early Blight": {
+      "pathogen": "Alternaria solani",
+      "symptoms": "Concentric rings (target board) on lower leaves, spreading upward.",
+      "severity_matrix": {
+        "Mild": {
+          "organic_treatment": "Spray Trichoderma harzianum @ 5g/L water with sticker. Mulch beds.",
+          "chemical_treatment": "Mancozeb 75% WP @ 2.5g/L water or Propineb 70% WP @ 2g/L.",
+          "dosage_hindi": "मैंकोज़ेब 75% WP (2.5 ग्राम प्रति लीटर पानी) का निवारक छिड़काव करें।",
+          "irrigation_advice": "Avoid waterlogging; maintain moderate soil moisture."
+        },
+        "Moderate": {
+          "organic_treatment": "Spray Neem oil 10,000 ppm @ 3ml/L water + Copper Oxychloride 2g/L.",
+          "chemical_treatment": "Difenoconazole 25% EC @ 1ml/L OR Tebuconazole 25.9% EC @ 1ml/L water.",
+          "dosage_hindi": "डाइफेनोकोनाज़ोल (1 मिली प्रति लीटर) या टेबुकोनाज़ोल (1 मिली/लीटर)।",
+          "irrigation_advice": "Irrigate alternate furrows to reduce micro-climate dampness."
+        },
+        "Severe": {
+          "organic_treatment": "Rogue out infected haulms; harvest early if tubers are mature.",
+          "chemical_treatment": "Pyraclostrobin 20% WG @ 1g/L OR Azoxystrobin 23% SC @ 1ml/L water.",
+          "dosage_hindi": "पाइराक्लोस्ट्रोबिन 20% WG (1 ग्राम/लीटर) या अज़ॉक्सीस्ट्रोबिन 23% SC (1 मिली/लीटर)।",
+          "irrigation_advice": "Stop irrigation 10-14 days before dehaulming."
+        }
+      },
+      "pre_harvest_interval_days": 7,
+      "cibrc_approved": true
+    },
+    "Potato_Late Blight": {
+      "pathogen": "Phytophthora infestans",
+      "symptoms": "Water-soaked lesions on leaf margins, white cottony mold under high humidity, rapid plant collapse.",
+      "severity_matrix": {
+        "Mild": {
+          "organic_treatment": "Prophylactic spray of Copper Hydroxide @ 2g/L water.",
+          "chemical_treatment": "Mancozeb 75% WP @ 2.5g/L water before rain/dew.",
+          "dosage_hindi": "मैंकोज़ेब 75% WP (2.5 ग्राम प्रति लीटर पानी) मौसम में नमी आते ही छिड़कें।",
+          "irrigation_advice": "Keep furrows dry; avoid evening sprinkling."
+        },
+        "Moderate": {
+          "organic_treatment": "Bordeaux mixture 1% spray covering foliage thoroughly.",
+          "chemical_treatment": "Metalaxyl 8% + Mancozeb 64% WP @ 2.5g/L OR Cymoxanil 8% + Mancozeb 64% WP @ 2g/L.",
+          "dosage_hindi": "रिडोमिल (मेटालेक्सिल + मैंकोज़ेब) 2.5 ग्राम/लीटर या साइमोक्सानिल + मैंकोज़ेब 2 ग्राम/लीटर।",
+          "irrigation_advice": "Strict furrow irrigation; avoid splashing soil on leaves."
+        },
+        "Severe": {
+          "organic_treatment": "Dehaulm (cut foliage above ground) immediately to prevent spore migration into tubers.",
+          "chemical_treatment": "Dimethomorph 50% WP @ 1g/L + Mancozeb 2g/L OR Fenamidone 10% + Mancozeb 50% WG @ 2.5g/L.",
+          "dosage_hindi": "डाइमर्थोमोर्फ (1 ग्राम/लीटर) + मैंकोज़ेब (2 ग्राम/लीटर)। कंदों को बचाने के लिए तुरंत बेल काट दें।",
+          "irrigation_advice": "Do not irrigate; keep tubers dry in soil until harvest."
+        }
+      },
+      "pre_harvest_interval_days": 10,
+      "cibrc_approved": true
+    },
+    "Rice (Paddy)_Leaf Blast": {
+      "pathogen": "Magnaporthe oryzae",
+      "symptoms": "Spindle-shaped / diamond-shaped lesions with gray center and brown margin on leaves and leaf collars.",
+      "severity_matrix": {
+        "Mild": {
+          "organic_treatment": "Seed treatment / foliar spray with Pseudomonas fluorescens @ 10g/L water.",
+          "chemical_treatment": "Tricyclazole 75% WP @ 0.6g/L water.",
+          "dosage_hindi": "ट्राइसाइक्लाज़ोल 75% WP (0.6 ग्राम प्रति लीटर पानी) का छिड़काव करें।",
+          "irrigation_advice": "Maintain shallow 2-3 cm standing water; avoid drying the field."
+        },
+        "Moderate": {
+          "organic_treatment": "Spray Neem oil 3ml/L + Cow dung slurry supernatant (5%).",
+          "chemical_treatment": "Isoprothiolane 40% EC @ 1.5ml/L OR Kasugamycin 3% SL @ 2.5ml/L water.",
+          "dosage_hindi": "आइसोप्रोथियोलेन 40% EC (1.5 मिली/लीटर) या कासुगामाइसिन (2.5 मिली/लीटर)।",
+          "irrigation_advice": "Avoid high nitrogen (urea) top-dressing; split nitrogen applications."
+        },
+        "Severe": {
+          "organic_treatment": "Apply bio-control formulation with silicon fertilizer foliar spray.",
+          "chemical_treatment": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC @ 1ml/L OR Tebuconazole 50% + Trifloxystrobin 25% WG (Nativo) @ 0.4g/L.",
+          "dosage_hindi": "नेटिवो (टेबुकोनाज़ोल + ट्राइफ्लॉक्सीस्ट्रोबिन) 0.4 ग्राम/लीटर पानी में छिड़कें। यूरिया तुरंत बंद करें।",
+          "irrigation_advice": "Drain field for 24 hours, then re-flood to dilute soil nitrogen."
+        }
+      },
+      "pre_harvest_interval_days": 15,
+      "cibrc_approved": true
+    },
+    "Corn (Maize)_Common Rust": {
+      "pathogen": "Puccinia sorghi",
+      "symptoms": "Golden-brown to cinnamon-brown powdery pustules scattered on upper and lower leaf surfaces.",
+      "severity_matrix": {
+        "Mild": {
+          "organic_treatment": "Foliar spray of Trichoderma harzianum @ 5g/L water + fermented buttermilk spray (5%).",
+          "chemical_treatment": "Mancozeb 75% WP @ 2.5g/L water.",
+          "dosage_hindi": "मैंकोज़ेब 75% WP (2.5 ग्राम प्रति लीटर पानी) या छाछ का छिड़काव।",
+          "irrigation_advice": "Irrigate in the morning so sun dries leaf surfaces rapidly."
+        },
+        "Moderate": {
+          "organic_treatment": "Sulphur 80% WDG @ 3g/L water.",
+          "chemical_treatment": "Propiconazole 25% EC (Tilt) @ 1ml/L water.",
+          "dosage_hindi": "प्रोपिकोनाज़ोल 25% EC (टिल्ट) 1 मिली प्रति लीटर पानी में छिड़कें।",
+          "irrigation_advice": "Ensure row-to-row spacing for cross-ventilation."
+        },
+        "Severe": {
+          "organic_treatment": "Remove severely dried lower leaves; apply silicon amendment.",
+          "chemical_treatment": "Azoxystrobin 23% SC @ 1ml/L OR Pyraclostrobin 20% WG @ 1g/L water.",
+          "dosage_hindi": "अज़ॉक्सीस्ट्रोबिन 23% SC (1 मिली/लीटर)। भुट्टा पकने से पहले दोबारा छिड़काव करें।",
+          "irrigation_advice": "Avoid over-irrigation during silking stage."
+        }
+      },
+      "pre_harvest_interval_days": 14,
+      "cibrc_approved": true
+    },
+    "Cotton_Bollworm Infestation": {
+      "pathogen": "Helicoverpa armigera / Pectinophora gossypiella",
+      "symptoms": "Bored holes in bolls, flower shedding (rosette flowers), chewed leaves with frass.",
+      "severity_matrix": {
+        "Mild": {
+          "organic_treatment": "Install 5 pheromone traps per acre. Spray Bacillus thuringiensis (Bt) @ 2g/L or NSKE 5%.",
+          "chemical_treatment": "Profenofos 50% EC @ 2ml/L water.",
+          "dosage_hindi": "फेरोमोन ट्रैप (5 प्रति एकड़) लगाएं और नीम का काढ़ा या बीटी (2 ग्राम/लीटर) छिड़कें।",
+          "irrigation_advice": "Maintain normal irrigation; avoid water stress during square formation."
+        },
+        "Moderate": {
+          "organic_treatment": "Release Trichogramma egg parasitoids @ 60,000/acre. Spray HaNPV @ 250 LE/acre.",
+          "chemical_treatment": "Emamectin Benzoate 5% SG @ 0.5g/L OR Spinosad 45% SC @ 0.3ml/L water.",
+          "dosage_hindi": "एमामेक्टिन बेंजोएट 5% SG (0.5 ग्राम प्रति लीटर) या स्पिनोसैड 45% SC (0.3 मिली/लीटर)।",
+          "irrigation_advice": "Moderate furrow irrigation."
+        },
+        "Severe": {
+          "organic_treatment": "Collect and destroy infested bolls manually; mass trapping with 15 pheromone traps/acre.",
+          "chemical_treatment": "Chlorantraniliprole 18.5% SC (Coragen) @ 0.3ml/L OR Flubendiamide 39.35% SC @ 0.25ml/L water.",
+          "dosage_hindi": "कोराजन (क्लोरेंट्रानिलिप्रोल 18.5% SC) 0.3 मिली प्रति लीटर पानी में शाम के समय छिड़कें।",
+          "irrigation_advice": "Avoid excess nitrogen fertilizer which attracts moths."
+        }
+      },
+      "pre_harvest_interval_days": 14,
+      "cibrc_approved": true
+    },
+    "Wheat_Yellow Rust (Stripe Rust)": {
+      "pathogen": "Puccinia striiformis",
+      "symptoms": "Yellowish-orange pustules arranged in linear stripes between leaf veins, rubs off as yellow powder on fingers.",
+      "severity_matrix": {
+        "Mild": {
+          "organic_treatment": "Spray bio-fungicide Trichoderma viride @ 5g/L water + fermented neem extract.",
+          "chemical_treatment": "Propiconazole 25% EC (Tilt) @ 1ml/L water upon first spot observation.",
+          "dosage_hindi": "पीला रतुआ दिखते ही प्रोपिकोनाज़ोल 25% EC (टिल्ट) 1 मिली प्रति लीटर पानी में छिड़कें।",
+          "irrigation_advice": "Avoid irrigating during cold humid mornings; prevent excess soil moisture."
+        },
+        "Moderate": {
+          "organic_treatment": "Sulphur 80% WDG @ 3g/L water.",
+          "chemical_treatment": "Tebuconazole 25.9% EC @ 1ml/L OR Propiconazole 25% EC @ 1ml/L water.",
+          "dosage_hindi": "टेबुकोनाज़ोल 25.9% EC (1 मिली/लीटर पानी)। पूरे खेत में समान छिड़काव करें।",
+          "irrigation_advice": "Wait for wind/sun before irrigating to reduce leaf dampness."
+        },
+        "Severe": {
+          "organic_treatment": "Isolate affected field section, alert local Krishi Vigyan Kendra (KVK).",
+          "chemical_treatment": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC @ 1ml/L water. Repeat after 15 days if yellow stripes persist.",
+          "dosage_hindi": "अज़ॉक्सीस्ट्रोबिन + डाइफेनोकोनाज़ोल (1 मिली प्रति लीटर पानी)। 15 दिन बाद दोबारा छिड़कें।",
+          "irrigation_advice": "Stop canal irrigation until pustule sporulation subsides."
+        }
+      },
+      "pre_harvest_interval_days": 21,
+      "cibrc_approved": true
+    }
+  },
+  "safety_protocols": {
+    "ppe_advisory_hindi": "कीटनाशक छिड़कते समय मास्क, दस्ताने और पूरी आस्तीन के कपड़े पहनें। हवा की विपरीत दिशा में छिड़काव न करें।",
+    "ppe_advisory_english": "Wear mask, nitrile gloves, and full-sleeved protective clothing during spraying. Never spray against wind direction.",
+    "emergency_helpline": "Kisan Call Centre Toll-Free: 1800-180-1551"
+  }
+}

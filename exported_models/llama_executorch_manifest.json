@@ -1,0 +1,26 @@
+{
+  "model_architecture": "LlamaForCausalLM",
+  "base_model": "meta-llama/Llama-3.2-1B-Instruct",
+  "parameter_count": "1.23 Billion",
+  "original_dtype": "bfloat16 (2.46 GB)",
+  "quantized_dtype": "INT4 Groupwise Quantized Weights, INT8 Activations",
+  "quantized_binary_size_mb": 648.5,
+  "runtime": "ExecuTorch v0.4+ / PyTorch Edge",
+  "backend_delegate": "XNNPACK with Arm KleidiAI Microkernels",
+  "target_soc": [
+    "Raspberry Pi 5 (Broadcom BCM2712, 4x Cortex-A76 @ 2.4 GHz)",
+    "Armv8.2-A / Armv9-A Android SoCs (Snapdragon 7/8 series, Dimensity)"
+  ],
+  "latency_profile_estimates": {
+    "time_to_first_token_ms": 320.0,
+    "tokens_per_second": 14.8,
+    "peak_rss_ram_mb": 880.0,
+    "power_efficiency_tokens_per_watt": 3.2
+  },
+  "compilation_flags": {
+    "-O": 3,
+    "--backend": "xnnpack",
+    "--quantize": "int4_weight",
+    "--max-seq-length": 512
+  }
+}
