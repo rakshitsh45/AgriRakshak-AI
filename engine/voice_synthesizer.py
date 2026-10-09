@@ -58,12 +58,14 @@ class EdgeVoiceSynthesizer:
         logger.info("Saved offline audio advisory alert: %s", output_file)
         return output_file
 
-    def get_html5_speech_js(self, text: str, lang: str = "hi-IN") -> str:
+    def get_html5_speech_js(self, text: str, lang: str = "hi-IN", button_label: Optional[str] = None) -> str:
         """
         Returns JavaScript code to trigger offline on-device speech synthesis (W3C standard)
         supported natively on all Android webviews, Chrome, and Linux browsers without internet.
         """
-        # Escape quotes in text
+        if button_label is None:
+            button_label = "🔊 सुनिए आवाज़ में सलाह" if lang.startswith("hi") else "🔊 Listen to Voice Advisory"
+
         safe_text = text.replace('"', '\\"').replace("\n", " ")
         js = f"""
         <script>
@@ -95,7 +97,7 @@ class EdgeVoiceSynthesizer:
             gap: 8px;
             margin-top: 10px;
         ">
-            🔊 सुनिए आवाज़ में सलाह (Listen Offline Voice Advisory)
+            {button_label}
         </button>
         """
         return js
