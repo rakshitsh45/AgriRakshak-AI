@@ -36,23 +36,6 @@ UI_CONTENT = {
         "badge_llama": "🧠 लामा 3.2 1B (एग्जीक्यूटर टॉर्च)",
         "badge_offline": "🔒 100% ऑफलाइन (बिना इंटरनेट)",
         "lang_selector_label": "🌐 अपनी पसंदीदा भाषा चुनें:",
-        "settings_header": "⚙️ सिस्टम सेटिंग्स",
-        "input_header": "📷 पौधे की फोटो का स्रोत",
-        "input_modes": [
-            "पहले से मौजूद फील्ड सैंपल (तुरंत डेमो देखें)",
-            "पत्ती की फोटो अपलोड करें",
-            "कैमरे से लाइव फोटो लें"
-        ],
-        "sample_dropdown_label": "फसल व बीमारी का फील्ड सैंपल चुनें:",
-        "samples": [
-            ("tomato_early_blight", "टमाटर - अगेती झुलसा रोग (अर्ली ब्लाइट)"),
-            ("tomato_late_blight", "टमाटर - पछेती झुलसा रोग (लेट ब्लाइट)"),
-            ("corn_rust", "मक्का - रतुआ रोग (कॉमन रस्ट)"),
-            ("cotton_blight", "कपास - जीवाणु झुलसा रोग"),
-            ("healthy_wheat", "गेहूं - पूर्णतः स्वस्थ फसल")
-        ],
-        "upload_label": "पत्ती की फोटो चुनें (JPG/PNG)",
-        "camera_label": "कैमरे से पत्ती की फोटो खींचें",
         "telemetry_sidebar_header": "📊 आर्म SoC हार्डवेयर टेलीमेट्री",
         "telemetry_sidebar_text": """
         * **टारगेट चिपसेट:** Arm Cortex-A76 @ 2.4GHz
@@ -76,7 +59,20 @@ UI_CONTENT = {
         "audio_section_header": "🔊 किसान ऑडियो सलाह (सुनकर समझें)",
         "advisory_section_header": "🧠 लामा 3.2 ऑन-डिवाइस वैज्ञानिक सलाह व उपचार",
         "deep_telemetry_header": "🔬 विस्तृत SoC प्रदर्शन व लेटेंसी मेट्रिक्स",
-        "prompt_select": "👈 कृपया निदान शुरू करने के लिए साइडबार से पौधे की फोटो चुनें या अपलोड करें।",
+        "check_new_header": "🔄 नया पौधा या अगली फसल जांचें (Check Next Plant)",
+        "check_new_desc": "किसी अन्य पौधे या नई फसल की जांच करने के लिए नीचे दिए गए आसान विकल्पों में से कोई भी एक चुनें:",
+        "tab_samples": "🌱 तैयार सैंपल से जांचें",
+        "tab_camera": "📸 कैमरे से फोटो खींचें",
+        "tab_upload": "📁 गैलरी / फोन से फोटो चुनें",
+        "sample_btn_labels": {
+            "tomato_early_blight": "🍅 टमाटर (अगेती झुलसा)",
+            "tomato_late_blight": "🥔 टमाटर (पछेती झुलसा)",
+            "corn_rust": "🌽 मक्का (रतुआ रोग)",
+            "cotton_blight": "🌱 कपास (जीवाणु झुलसा)",
+            "healthy_wheat": "🌾 गेहूं (स्वस्थ फसल)"
+        },
+        "camera_input_label": "कैमरे के सामने पत्ता रखकर फोटो खींचें:",
+        "upload_input_label": "फोन या कंप्यूटर से पत्ती की फोटो चुनें (JPG/PNG):",
         "severity_map": {
             "mild": "🟢 हल्का (<15%)",
             "moderate": "🟠 मध्यम (15-40%)",
@@ -91,23 +87,6 @@ UI_CONTENT = {
         "badge_llama": "🧠 Llama 3.2 1B (ExecuTorch INT4)",
         "badge_offline": "🔒 100% Offline (Air-Gapped)",
         "lang_selector_label": "🌐 Choose Your Preferred Language:",
-        "settings_header": "⚙️ System Configuration",
-        "input_header": "📷 Leaf Image Source",
-        "input_modes": [
-            "Pre-Loaded Field Samples (Instant Demo)",
-            "Upload Leaf Photo",
-            "Capture from Live Camera"
-        ],
-        "sample_dropdown_label": "Select Crop Condition Sample:",
-        "samples": [
-            ("tomato_early_blight", "Tomato - Early Blight"),
-            ("tomato_late_blight", "Tomato - Late Blight"),
-            ("corn_rust", "Corn (Maize) - Common Rust"),
-            ("cotton_blight", "Cotton - Bacterial Blight"),
-            ("healthy_wheat", "Wheat - Healthy Crop")
-        ],
-        "upload_label": "Upload Crop Leaf Photo (JPG/PNG)",
-        "camera_label": "Take a photo of crop leaf",
         "telemetry_sidebar_header": "📊 Arm SoC Hardware Telemetry",
         "telemetry_sidebar_text": """
         * **Target Processor:** Arm Cortex-A76 @ 2.4GHz
@@ -131,7 +110,20 @@ UI_CONTENT = {
         "audio_section_header": "🔊 Spoken Voice Advisory",
         "advisory_section_header": "🧠 Llama 3.2 ExecuTorch Scientific Field Advisory",
         "deep_telemetry_header": "🔬 In-Depth SoC Performance & Execution Telemetry",
-        "prompt_select": "👈 Please select or upload a crop leaf image from the sidebar to begin offline diagnosis.",
+        "check_new_header": "🔄 Check Another Plant or New Crop",
+        "check_new_desc": "Select any easy option below to diagnose another leaf or new crop:",
+        "tab_samples": "🌱 Quick Demo Samples",
+        "tab_camera": "📸 Live Camera Scan",
+        "tab_upload": "📁 Upload Leaf Photo",
+        "sample_btn_labels": {
+            "tomato_early_blight": "🍅 Tomato (Early Blight)",
+            "tomato_late_blight": "🥔 Tomato (Late Blight)",
+            "corn_rust": "🌽 Corn (Common Rust)",
+            "cotton_blight": "🌱 Cotton (Bacterial Blight)",
+            "healthy_wheat": "🌾 Wheat (Healthy Crop)"
+        },
+        "camera_input_label": "Hold leaf in front of camera and capture:",
+        "upload_input_label": "Select leaf photo from device (JPG/PNG):",
         "severity_map": {
             "mild": "🟢 Mild (<15%)",
             "moderate": "🟠 Moderate (15-40%)",
@@ -162,6 +154,14 @@ st.markdown("""
         margin-right: 8px;
         display: inline-block;
     }
+    .check-new-card {
+        background: linear-gradient(135deg, #f0fdf4, #e6f9ed);
+        border: 2px solid #16a34a;
+        border-radius: 16px;
+        padding: 24px;
+        margin-top: 35px;
+        box-shadow: 0 6px 18px rgba(22, 163, 74, 0.12);
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -171,7 +171,7 @@ def load_pipeline():
 
 pipeline = load_pipeline()
 
-# Language Selection (At the very top of Sidebar)
+# Language Selection (Sidebar)
 st.sidebar.markdown("### 🌐 भाषा / Language")
 lang_choice = st.sidebar.radio(
     "Choose Language / भाषा चुनें:",
@@ -182,6 +182,18 @@ lang_choice = st.sidebar.radio(
 
 selected_lang = "hindi" if "हिंदी" in lang_choice else "english"
 T = UI_CONTENT[selected_lang]
+
+# Hardware Telemetry Panel in Sidebar
+with st.sidebar.expander(T["telemetry_sidebar_header"], expanded=True):
+    st.markdown(T["telemetry_sidebar_text"])
+
+# Session State for Current Plant
+if "source_type" not in st.session_state:
+    st.session_state["source_type"] = "sample"
+if "sample_name" not in st.session_state:
+    st.session_state["sample_name"] = "tomato_early_blight"
+if "uploaded_image" not in st.session_state:
+    st.session_state["uploaded_image"] = None
 
 # Top Header
 st.markdown(f"""
@@ -200,191 +212,180 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-if "active_sample" not in st.session_state:
-    st.session_state["active_sample"] = "tomato_early_blight"
-
-# 1-Click Plant Selector on Main Page
-st.markdown("##### " + ("🌿 त्वरित फसल व बीमारी चयन (1-Click Plant Switcher):" if selected_lang == "hindi" else "🌿 1-Click Fast Crop Switcher:"))
-q1, q2, q3, q4, q5 = st.columns(5)
-with q1:
-    if st.button("🍅 " + ("टमाटर (अगेती)" if selected_lang == "hindi" else "Tomato (Early)"), use_container_width=True):
-        st.session_state["active_sample"] = "tomato_early_blight"
-with q2:
-    if st.button("🥔 " + ("टमाटर (पछेती)" if selected_lang == "hindi" else "Tomato (Late)"), use_container_width=True):
-        st.session_state["active_sample"] = "tomato_late_blight"
-with q3:
-    if st.button("🌽 " + ("मक्का (रतुआ)" if selected_lang == "hindi" else "Corn (Rust)"), use_container_width=True):
-        st.session_state["active_sample"] = "corn_rust"
-with q4:
-    if st.button("🌱 " + ("कपास (झुलसा)" if selected_lang == "hindi" else "Cotton (Blight)"), use_container_width=True):
-        st.session_state["active_sample"] = "cotton_blight"
-with q5:
-    if st.button("🌾 " + ("गेहूं (स्वस्थ)" if selected_lang == "hindi" else "Wheat (Healthy)"), use_container_width=True):
-        st.session_state["active_sample"] = "healthy_wheat"
-
-# Sidebar Input Options
-st.sidebar.header(T["input_header"])
-input_mode = st.sidebar.radio(
-    T["input_header"] + ":",
-    T["input_modes"],
-    index=0
-)
-
-sample_choice = st.session_state["active_sample"]
-uploaded_file = None
-camera_file = None
-
-if input_mode == T["input_modes"][0]:
-    # Match default index from session_state
-    sample_keys = [s[0] for s in T["samples"]]
-    cur_idx = sample_keys.index(sample_choice) if sample_choice in sample_keys else 0
-    sample_choice = st.sidebar.selectbox(
-        T["sample_dropdown_label"],
-        T["samples"],
-        index=cur_idx,
-        format_func=lambda x: x[1]
-    )[0]
-    st.session_state["active_sample"] = sample_choice
-elif input_mode == T["input_modes"][1]:
-    uploaded_file = st.sidebar.file_uploader(T["upload_label"], type=["jpg", "jpeg", "png"])
-else:
-    camera_file = st.sidebar.camera_input(T["camera_label"])
-
-# Hardware Telemetry Panel in Sidebar
-with st.sidebar.expander(T["telemetry_sidebar_header"], expanded=True):
-    st.markdown(T["telemetry_sidebar_text"])
-
-# Process Input Image
+# Determine Active Image to Diagnose
 active_image = None
 class_hint = None
 
-if input_mode == T["input_modes"][0]:
-    active_image = create_sample_leaf_image(sample_choice)
-    class_hint = sample_choice
-elif uploaded_file is not None:
-    file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    active_image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-    active_image = cv2.cvtColor(active_image, cv2.COLOR_BGR2RGB)
-elif camera_file is not None:
-    file_bytes = np.asarray(bytearray(camera_file.read()), dtype=np.uint8)
-    active_image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-    active_image = cv2.cvtColor(active_image, cv2.COLOR_BGR2RGB)
-
-if active_image is not None:
-    with st.spinner(T["processing_spinner"]):
-        res = pipeline.process_leaf(active_image, language=selected_lang, class_hint=class_hint)
-
-    vis = res["vision"]
-    adv = res["advisory"]
-    telemetry = adv["telemetry"]
-
-    # Localize Condition and Crop Names
-    if selected_lang == "hindi":
-        display_crop = vis["crop"]
-        display_condition = vis["hindi_name"]
-        if "mild" in vis["severity"].lower():
-            display_severity = T["severity_map"]["mild"]
-        elif "severe" in vis["severity"].lower():
-            display_severity = T["severity_map"]["severe"]
-        elif "healthy" in vis["severity"].lower():
-            display_severity = T["severity_map"]["healthy"]
-        else:
-            display_severity = T["severity_map"]["moderate"]
-    else:
-        display_crop = vis["crop"]
-        display_condition = vis["disease"]
-        if "mild" in vis["severity"].lower():
-            display_severity = T["severity_map"]["mild"]
-        elif "severe" in vis["severity"].lower():
-            display_severity = T["severity_map"]["severe"]
-        elif "healthy" in vis["severity"].lower():
-            display_severity = T["severity_map"]["healthy"]
-        else:
-            display_severity = T["severity_map"]["moderate"]
-
-    # 4 Top Metrics Cards (100% pure single language)
-    m1, m2, m3, m4 = st.columns(4)
-    with m1:
-        st.metric(
-            label=T["metric_crop"],
-            value=display_crop
-        )
-    with m2:
-        st.metric(
-            label=T["metric_condition"],
-            value=display_condition,
-            delta=f"{T['conf_label']}: {vis['confidence_percent']}%"
-        )
-    with m3:
-        st.metric(
-            label=T["metric_severity"],
-            value=display_severity,
-            delta=f"{T['lesion_label']}: {vis['lesion_ratio_percent']}%"
-        )
-    with m4:
-        st.metric(
-            label=T["metric_latency"],
-            value=f"{res['total_system_latency_ms']} ms",
-            delta=f"Vision: {vis['inference_time_ms']}ms | Llama: {telemetry['total_inference_time_sec']*1000:.0f}ms"
-        )
-
-    st.divider()
-
-    # Visual Inspection & Lesion Segmentation
-    col_img1, col_img2 = st.columns(2)
-    with col_img1:
-        st.subheader(T["orig_img_header"])
-        st.image(active_image, use_container_width=True)
-
-    with col_img2:
-        st.subheader(T["heatmap_header"])
-        st.image(vis["annotated_image"], caption=T["heatmap_caption"], use_container_width=True)
-
-    # Voice Advisory Section
-    st.subheader(T["audio_section_header"])
-    st.markdown(res["audio_html"], unsafe_allow_html=True)
-    if os.path.exists(res["audio_file"]):
-        with open(res["audio_file"], "rb") as f:
-            audio_bytes = f.read()
-        st.audio(audio_bytes, format="audio/wav")
-
-    # Llama 3.2 ExecuTorch Grounded Advisory Section
-    st.subheader(T["advisory_section_header"])
-    st.markdown(adv["markdown_advisory"])
-
-    # Deep SoC Telemetry Table
-    with st.expander(T["deep_telemetry_header"], expanded=False):
-        c_tel1, c_tel2 = st.columns(2)
-        if selected_lang == "hindi":
-            with c_tel1:
-                st.markdown(f"""
-                * **रनटाइम फ्रेमवर्क:** `{telemetry['model_runtime']}`
-                * **प्रथम टोकन समय (TTFT):** `{telemetry['time_to_first_token_sec']} सेकंड`
-                * **जनरेशन गति:** `{telemetry['tokens_per_second']} टोकन/सेकंड`
-                * **कुल उत्पादित टोकन:** `{telemetry['tokens_generated']}`
-                """)
-            with c_tel2:
-                st.markdown(f"""
-                * **कार्यशील रैम (RSS):** `{telemetry['peak_ram_mb']} MB`
-                * **क्वांटाइजेशन:** `INT4 वेट + INT8 एक्टिवेशन`
-                * **आर्म निर्देश सेट:** `Armv8.2-A / Armv9-A (NEON + KleidiAI)`
-                * **नेटवर्क कॉल:** `0 बाइट्स (100% ऑफलाइन)`
-                """)
-        else:
-            with c_tel1:
-                st.markdown(f"""
-                * **Inference Runtime:** `{telemetry['model_runtime']}`
-                * **Time to First Token (TTFT):** `{telemetry['time_to_first_token_sec']} s`
-                * **Decode Speed:** `{telemetry['tokens_per_second']} tokens/sec`
-                * **Total Tokens Generated:** `{telemetry['tokens_generated']}`
-                """)
-            with c_tel2:
-                st.markdown(f"""
-                * **Peak Working RAM (RSS):** `{telemetry['peak_ram_mb']} MB`
-                * **Quantization Scheme:** `INT4 Groupwise (Weight) + INT8 (Activation)`
-                * **Target Arm ISA:** `Armv8.2-A / Armv9-A (NEON + KleidiAI)`
-                * **Network Dependency:** `Verified 100% Offline (Zero Socket Calls)`
-                """)
-
+if st.session_state["source_type"] == "sample":
+    active_image = create_sample_leaf_image(st.session_state["sample_name"])
+    class_hint = st.session_state["sample_name"]
+elif st.session_state["source_type"] in ["upload", "camera"] and st.session_state["uploaded_image"] is not None:
+    active_image = st.session_state["uploaded_image"]
 else:
-    st.info(T["prompt_select"])
+    active_image = create_sample_leaf_image("tomato_early_blight")
+    class_hint = "tomato_early_blight"
+
+# Run Pipeline on Active Image
+with st.spinner(T["processing_spinner"]):
+    res = pipeline.process_leaf(active_image, language=selected_lang, class_hint=class_hint)
+
+vis = res["vision"]
+adv = res["advisory"]
+telemetry = adv["telemetry"]
+
+# Localize Output Names
+if selected_lang == "hindi":
+    display_crop = vis["crop"]
+    display_condition = vis["hindi_name"]
+    if "mild" in vis["severity"].lower():
+        display_severity = T["severity_map"]["mild"]
+    elif "severe" in vis["severity"].lower():
+        display_severity = T["severity_map"]["severe"]
+    elif "healthy" in vis["severity"].lower():
+        display_severity = T["severity_map"]["healthy"]
+    else:
+        display_severity = T["severity_map"]["moderate"]
+else:
+    display_crop = vis["crop"]
+    display_condition = vis["disease"]
+    if "mild" in vis["severity"].lower():
+        display_severity = T["severity_map"]["mild"]
+    elif "severe" in vis["severity"].lower():
+        display_severity = T["severity_map"]["severe"]
+    elif "healthy" in vis["severity"].lower():
+        display_severity = T["severity_map"]["healthy"]
+    else:
+        display_severity = T["severity_map"]["moderate"]
+
+# 4 Top Metrics Cards
+m1, m2, m3, m4 = st.columns(4)
+with m1:
+    st.metric(label=T["metric_crop"], value=display_crop)
+with m2:
+    st.metric(label=T["metric_condition"], value=display_condition, delta=f"{T['conf_label']}: {vis['confidence_percent']}%")
+with m3:
+    st.metric(label=T["metric_severity"], value=display_severity, delta=f"{T['lesion_label']}: {vis['lesion_ratio_percent']}%")
+with m4:
+    st.metric(
+        label=T["metric_latency"],
+        value=f"{res['total_system_latency_ms']} ms",
+        delta=f"Vision: {vis['inference_time_ms']}ms | Llama: {telemetry['total_inference_time_sec']*1000:.0f}ms"
+    )
+
+st.divider()
+
+# Visual Leaf Inspection & Lesion Heatmap Overlay
+col_img1, col_img2 = st.columns(2)
+with col_img1:
+    st.subheader(T["orig_img_header"])
+    st.image(active_image, use_container_width=True)
+
+with col_img2:
+    st.subheader(T["heatmap_header"])
+    st.image(vis["annotated_image"], caption=T["heatmap_caption"], use_container_width=True)
+
+# Spoken Audio Advisory
+st.subheader(T["audio_section_header"])
+st.markdown(res["audio_html"], unsafe_allow_html=True)
+if os.path.exists(res["audio_file"]):
+    with open(res["audio_file"], "rb") as f:
+        audio_bytes = f.read()
+    st.audio(audio_bytes, format="audio/wav")
+
+# Llama 3.2 Grounded Advisory
+st.subheader(T["advisory_section_header"])
+st.markdown(adv["markdown_advisory"])
+
+# Deep Telemetry Expander
+with st.expander(T["deep_telemetry_header"], expanded=False):
+    c_tel1, c_tel2 = st.columns(2)
+    if selected_lang == "hindi":
+        with c_tel1:
+            st.markdown(f"""
+            * **रनटाइम फ्रेमवर्क:** `{telemetry['model_runtime']}`
+            * **प्रथम टोकन समय (TTFT):** `{telemetry['time_to_first_token_sec']} सेकंड`
+            * **जनरेशन गति:** `{telemetry['tokens_per_second']} टोकन/सेकंड`
+            * **कुल उत्पादित टोकन:** `{telemetry['tokens_generated']}`
+            """)
+        with c_tel2:
+            st.markdown(f"""
+            * **कार्यशील रैम (RSS):** `{telemetry['peak_ram_mb']} MB`
+            * **क्वांटाइजेशन:** `INT4 वेट + INT8 एक्टिवेशन`
+            * **आर्म निर्देश सेट:** `Armv8.2-A / Armv9-A (NEON + KleidiAI)`
+            * **नेटवर्क कॉल:** `0 बाइट्स (100% ऑफलाइन)`
+            """)
+    else:
+        with c_tel1:
+            st.markdown(f"""
+            * **Inference Runtime:** `{telemetry['model_runtime']}`
+            * **Time to First Token (TTFT):** `{telemetry['time_to_first_token_sec']} s`
+            * **Decode Speed:** `{telemetry['tokens_per_second']} tokens/sec`
+            * **Total Tokens Generated:** `{telemetry['tokens_generated']}`
+            """)
+        with c_tel2:
+            st.markdown(f"""
+            * **Peak Working RAM (RSS):** `{telemetry['peak_ram_mb']} MB`
+            * **Quantization Scheme:** `INT4 Groupwise (Weight) + INT8 (Activation)`
+            * **Target Arm ISA:** `Armv8.2-A / Armv9-A (NEON + KleidiAI)`
+            * **Network Dependency:** `Verified 100% Offline (Zero Socket Calls)`
+            """)
+
+# ==============================================================================
+# SECTION: CHECK NEW PLANT / NEXT CROP (PLACED AT THE VERY END OF MAIN SCREEN)
+# ==============================================================================
+st.markdown("<div style='margin-top: 45px;'></div>", unsafe_allow_html=True)
+st.markdown(f"""
+<div class="check-new-card">
+    <h2 style="color: #14532d; margin: 0 0 8px 0; font-size: 24px; font-weight: 700;">
+        {T['check_new_header']}
+    </h2>
+    <p style="color: #166534; margin: 0 0 18px 0; font-size: 15px;">
+        {T['check_new_desc']}
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+# 3 Intuitive Tabs for Farmer Accessibility
+tab_sample, tab_cam, tab_up = st.tabs([
+    f"  {T['tab_samples']}  ",
+    f"  {T['tab_camera']}  ",
+    f"  {T['tab_upload']}  "
+])
+
+with tab_sample:
+    st.markdown(" ")
+    btn_cols = st.columns(5)
+    samples_list = [
+        ("tomato_early_blight", T["sample_btn_labels"]["tomato_early_blight"]),
+        ("tomato_late_blight", T["sample_btn_labels"]["tomato_late_blight"]),
+        ("corn_rust", T["sample_btn_labels"]["corn_rust"]),
+        ("cotton_blight", T["sample_btn_labels"]["cotton_blight"]),
+        ("healthy_wheat", T["sample_btn_labels"]["healthy_wheat"]),
+    ]
+    for idx, (s_key, s_label) in enumerate(samples_list):
+        with btn_cols[idx]:
+            if st.button(s_label, key=f"btn_sample_{s_key}", use_container_width=True):
+                st.session_state["source_type"] = "sample"
+                st.session_state["sample_name"] = s_key
+                st.session_state["uploaded_image"] = None
+                st.rerun()
+
+with tab_cam:
+    st.markdown(" ")
+    cam_snap = st.camera_input(T["camera_input_label"])
+    if cam_snap is not None:
+        file_bytes = np.asarray(bytearray(cam_snap.read()), dtype=np.uint8)
+        img_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+        st.session_state["uploaded_image"] = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+        st.session_state["source_type"] = "camera"
+        st.rerun()
+
+with tab_upload:
+    st.markdown(" ")
+    uploaded_file = st.file_uploader(T["upload_input_label"], type=["jpg", "jpeg", "png"])
+    if uploaded_file is not None:
+        file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+        img_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+        st.session_state["uploaded_image"] = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+        st.session_state["source_type"] = "upload"
+        st.rerun()
