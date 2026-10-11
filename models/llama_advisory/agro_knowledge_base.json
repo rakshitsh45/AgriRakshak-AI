@@ -207,6 +207,188 @@
       },
       "pre_harvest_interval_days": 21,
       "cibrc_approved": true
+    },
+    "Tomato_Bacterial Spot": {
+      "pathogen": "Xanthomonas campestris pv. vesicatoria",
+      "symptoms": "Small, dark, greasy/water-soaked spots on leaves and fruit with yellow halos. Spots rarely exceed 3mm.",
+      "severity_matrix": {
+        "Mild": {
+          "organic_treatment": "Spray Copper Hydroxide 53.8% DF @ 2.0g/L water mixed with biological bactericide Pseudomonas fluorescens (5g/L).",
+          "chemical_treatment": "Copper Oxychloride 50% WP @ 2.5g/L + Streptocycline (100 ppm) @ 1g per 10 Litres water.",
+          "dosage_hindi": "कॉपर ऑक्सीक्लोराइड 50% WP (2.5 ग्राम/लीटर) + स्ट्रेप्टोसाइक्लिन (1 ग्राम प्रति 10 लीटर पानी)।",
+          "irrigation_advice": "Avoid overhead sprinkler irrigation; do not handle or prune wet plants."
+        },
+        "Moderate": {
+          "organic_treatment": "Spray Bordeaux mixture (1%) + fermented cow dung slurry filtrate (5%).",
+          "chemical_treatment": "Kasugamycin 3% SL @ 2.0ml/L OR Copper Hydroxide 77% WP @ 2.0g/L + Streptocycline 1.5g/10L water.",
+          "dosage_hindi": "कासुगामाइसिन 3% SL (2 मिली/लीटर) या कॉपर हाइड्रोक्साइड + स्ट्रेप्टोसाइक्लिन।",
+          "irrigation_advice": "Improve spacing between rows to enhance wind air circulation."
+        },
+        "Severe": {
+          "organic_treatment": "Rogue out infected plants immediately to prevent field-wide bacterial ooze spread.",
+          "chemical_treatment": "Copper Oxychloride @ 3g/L + Plantomycin / Streptocycline @ 2g/10L water. Repeat after 7-10 days.",
+          "dosage_hindi": "कॉपर ऑक्सीक्लोराइड (3 ग्राम/लीटर) + प्लांटोमाइसिन (2 ग्राम प्रति 10 लीटर)। प्रभावित टहनियों को काटकर जलाएं।",
+          "irrigation_advice": "Stop irrigation immediately until surface soil dries to arrest bacterial transmission."
+        }
+      },
+      "pre_harvest_interval_days": 7,
+      "cibrc_approved": true
+    },
+    "Tomato_Tomato Yellow Leaf Curl Virus": {
+      "pathogen": "Tomato yellow leaf curl virus (TYLCV) - Whitefly Vector (Bemisia tabaci)",
+      "symptoms": "Upward curling and cupping of leaflets, severe yellowing (chlorosis), stunted bushy growth with flower abortion.",
+      "severity_matrix": {
+        "Mild": {
+          "organic_treatment": "Install yellow sticky traps @ 15-20 per acre. Spray Neem oil (10,000 ppm) @ 3ml/L water to repel whiteflies.",
+          "chemical_treatment": "Imidacloprid 17.8% SL @ 0.5ml/L OR Thiamethoxam 25% WG @ 0.3g/L water to control whitefly vectors.",
+          "dosage_hindi": "पीले चिपचिपे ट्रैप लगाएं और इमिडाक्लोप्रिड 17.8% SL (0.5 मिली/लीटर) या थायमेथॉक्सम (0.3 ग्राम/लीटर) छिड़कें।",
+          "irrigation_advice": "Regular light irrigation; avoid water stress which accelerates viral stunting."
+        },
+        "Moderate": {
+          "organic_treatment": "Spray fish oil rosin soap (25g/L) + Neem seed kernel extract (NSKE 5%). Rogue out chlorotic stunted plants.",
+          "chemical_treatment": "Diafenthiuron 50% WP @ 1.0g/L OR Spiromesifen 22.9% SC @ 1.0ml/L water against whitefly nymphs.",
+          "dosage_hindi": "डायफेंथियूरॉन 50% WP (1 ग्राम/लीटर) या स्पाइरोमेसिफेन 22.9% SC (1 मिली/लीटर)।",
+          "irrigation_advice": "Irrigate beds in alternate furrows; spray during early morning when whiteflies are sluggish."
+        },
+        "Severe": {
+          "organic_treatment": "Uproot infected dwarf bushes and burn them outside the field to prevent viral reservoir building.",
+          "chemical_treatment": "Pyriproxyfen 10% + Bifenthrin 10% EC @ 1.5ml/L OR Cyantraniliprole 10.26% OD (Benevia) @ 1.8ml/L water.",
+          "dosage_hindi": "बेनेविया (सायनट्रानिलिप्रोल 10.26% OD) 1.8 मिली प्रति लीटर पानी में छिड़कें। वायरस से ग्रसित पौधों को उखाड़कर नष्ट करें।",
+          "irrigation_advice": "Maintain weed-free borders; eliminate Parthenium and solanaceous weeds around fields."
+        }
+      },
+      "pre_harvest_interval_days": 5,
+      "cibrc_approved": true
+    },
+    "Tomato_Spider Mites (Two-spotted spider mite)": {
+      "pathogen": "Tetranychus urticae (Arachnid Pest)",
+      "symptoms": "Fine yellow-white stippling on leaf surface, bronzing, fine silk webbing under leaves with tiny moving mites.",
+      "severity_matrix": {
+        "Mild": {
+          "organic_treatment": "Spray Neem oil (5ml/L) or wettable Sulphur 80% WDG @ 3g/L water. Ensure underside coverage.",
+          "chemical_treatment": "Propargite 57% EC @ 2.0ml/L water.",
+          "dosage_hindi": "सल्फर 80% WDG (3 ग्राम/लीटर) या प्रोपारगाइट 57% EC (2 मिली प्रति लीटर पानी)।",
+          "irrigation_advice": "Sprinkle clean water on canopy during dry afternoons to wash off mite colonies."
+        },
+        "Moderate": {
+          "organic_treatment": "Apply Beauveria bassiana @ 5g/L water or Pongamia oil spray (2%).",
+          "chemical_treatment": "Spiromesifen 22.9% SC @ 1.0ml/L OR Fenpyroximate 5% EC @ 1.5ml/L water.",
+          "dosage_hindi": "स्पाइरोमेसिफेन (ओबेरॉन) 1 मिली प्रति लीटर या फेनपाइरोक्सीमेट 1.5 मिली/लीटर पानी।",
+          "irrigation_advice": "Maintain soil moisture; dry conditions accelerate mite reproduction."
+        },
+        "Severe": {
+          "organic_treatment": "Prune severely webbed shoots into bags; release predatory mites (Phytoseiidae).",
+          "chemical_treatment": "Abamectin 1.9% EC @ 0.5ml/L OR Chlorfenapyr 10% SC @ 1.5ml/L water.",
+          "dosage_hindi": "एबामेक्टिन 1.9% EC (0.5 मिली/लीटर) या क्लोरफेनापायर (1.5 मिली/लीटर)। पत्तों के नीचे अवश्य छिड़कें।",
+          "irrigation_advice": "Avoid dusty farm roads near fields; dust promotes mite outbreaks."
+        }
+      },
+      "pre_harvest_interval_days": 3,
+      "cibrc_approved": true
+    },
+    "Cotton_Bacterial Blight": {
+      "pathogen": "Xanthomonas citri pv. malvacearum",
+      "symptoms": "Angular water-soaked spots bounded by veins on leaves, black arm lesions on stems, water-soaked spots on bolls.",
+      "severity_matrix": {
+        "Mild": {
+          "organic_treatment": "Spray bio-agent Pseudomonas fluorescens @ 10g/L water + fermented neem kernel spray (5%).",
+          "chemical_treatment": "Copper Oxychloride 50% WP @ 2.5g/L + Streptocycline @ 1g per 10 Litres water.",
+          "dosage_hindi": "कॉपर ऑक्सीक्लोराइड 50% WP (2.5 ग्राम/लीटर) + स्ट्रेप्टोसाइक्लिन (1 ग्राम प्रति 10 लीटर पानी)।",
+          "irrigation_advice": "Do not enter field when crop foliage is wet with morning dew."
+        },
+        "Moderate": {
+          "organic_treatment": "Bordeaux mixture (1%) spray covering both adaxial and abaxial leaf surfaces.",
+          "chemical_treatment": "Copper Hydroxide 77% WP @ 2g/L + Streptocycline 1.5g/10L water.",
+          "dosage_hindi": "कॉपर हाइड्रोक्साइड 2 ग्राम/लीटर + स्ट्रेप्टोसाइक्लिन 1.5 ग्राम प्रति 10 लीटर पानी।",
+          "irrigation_advice": "Improve inter-row ventilation; prune lower shaded branches."
+        },
+        "Severe": {
+          "organic_treatment": "Destroy heavily infected stems and bolls to reduce bacterial inoculum.",
+          "chemical_treatment": "Kasugamycin 3% SL @ 2ml/L + Copper Oxychloride @ 2.5g/L water. Repeat in 12 days.",
+          "dosage_hindi": "कासुगामाइसिन 3% SL (2 मिली/लीटर) + कॉपर ऑक्सीक्लोराइड (2.5 ग्राम/लीटर)।",
+          "irrigation_advice": "Avoid excessive nitrogen top-dressing which makes leaves succulent and susceptible."
+        }
+      },
+      "pre_harvest_interval_days": 14,
+      "cibrc_approved": true
+    },
+    "Cotton_Leaf Curl Virus": {
+      "pathogen": "Cotton leaf curl virus (CLCuV) - Whitefly Vector",
+      "symptoms": "Upward/downward leaf curling, thickening of veins (vein enation), cup-shaped foliar outgrowths (enations).",
+      "severity_matrix": {
+        "Mild": {
+          "organic_treatment": "Install 10-15 yellow sticky traps/acre. Spray Neem oil (10,000 ppm) @ 3ml/L water.",
+          "chemical_treatment": "Flonicamid 50% WG @ 0.3g/L OR Dinotefuran 20% SG @ 0.3g/L water.",
+          "dosage_hindi": "फ्लोनिकैमिड 50% WG (0.3 ग्राम/लीटर पानी) या डाइनोटेफ्यूरॉन (0.3 ग्राम/लीटर)।",
+          "irrigation_advice": "Regular irrigation; avoid water stress."
+        },
+        "Moderate": {
+          "organic_treatment": "Spray Verticillium lecanii @ 5g/L water + soap nut solution.",
+          "chemical_treatment": "Diafenthiuron 50% WP @ 1.2g/L OR Pyriproxyfen 10% EC @ 2ml/L water.",
+          "dosage_hindi": "डायफेंथियूरॉन 50% WP (1.2 ग्राम/लीटर) या पाइरीप्रॉक्सीफेन (2 मिली/लीटर)।",
+          "irrigation_advice": "Keep furrows clean of weeds that harbor whitefly colonies."
+        },
+        "Severe": {
+          "organic_treatment": "Rogue out early infected plants; maintain barrier crops like maize/pearl millet around cotton.",
+          "chemical_treatment": "Afidopyropen 50g/L DC (Sefina) @ 2ml/L OR Spiromesifen @ 1ml/L water.",
+          "dosage_hindi": "सेफिना (एफिडोपाइरोपेन) 2 मिली प्रति लीटर पानी में छिड़कें। रोग ग्रस्त छोटे पौधों को उखाड़ दें।",
+          "irrigation_advice": "Irrigate alternate rows."
+        }
+      },
+      "pre_harvest_interval_days": 15,
+      "cibrc_approved": true
+    },
+    "Rice (Paddy)_Bacterial Leaf Blight": {
+      "pathogen": "Xanthomonas oryzae pv. oryzae",
+      "symptoms": "Water-soaked to yellowish-white wavy marginal stripes along leaf blades, milky bacterial ooze droplets in morning dew.",
+      "severity_matrix": {
+        "Mild": {
+          "organic_treatment": "Spray bio-agent Pseudomonas fluorescens @ 10g/L water. Drain standing water for 48 hours.",
+          "chemical_treatment": "Streptocycline @ 1.5g per 10 Litres water + Copper Oxychloride @ 2.5g/L water.",
+          "dosage_hindi": "स्ट्रेप्टोसाइक्लिन (1.5 ग्राम प्रति 10 लीटर) + कॉपर ऑक्सीक्लोराइड (2.5 ग्राम/लीटर)। यूरिया तुरंत बंद करें।",
+          "irrigation_advice": "Drain field water immediately; do not allow irrigation water to flow into adjacent plots."
+        },
+        "Moderate": {
+          "organic_treatment": "Spray cow dung slurry filtrate (20%) + fermented neem leaf extract.",
+          "chemical_treatment": "Kasugamycin 3% SL @ 2.5ml/L OR Bismerthiazol 20% WP @ 2g/L water.",
+          "dosage_hindi": "कासुगामाइसिन 3% SL (2.5 मिली/लीटर) या बिस्मरथियाजोल 20% WP (2 ग्राम/लीटर)।",
+          "irrigation_advice": "Keep standing water to less than 2 cm; avoid flood transfers."
+        },
+        "Severe": {
+          "organic_treatment": "Apply potash (MOP) top-dressing (15 kg/acre) to build leaf silica resilience.",
+          "chemical_treatment": "Thiadiazole copper 20% SC @ 2ml/L OR Streptocycline @ 2g/10L water.",
+          "dosage_hindi": "थियाडियाज़ोल कॉपर (2 मिली/लीटर) या स्ट्रेप्टोसाइक्लिन (2 ग्राम/10 लीटर)। पोटाश खाद डालें।",
+          "irrigation_advice": "Strictly withhold canal water until yellow marginal blight drying halts."
+        }
+      },
+      "pre_harvest_interval_days": 14,
+      "cibrc_approved": true
+    },
+    "Rice (Paddy)_Stem Borer Infestation": {
+      "pathogen": "Scirpophaga incertulas (Yellow Stem Borer Insect)",
+      "symptoms": "Deadhearts (drying of central tiller shoot in vegetative stage), Whiteheads (empty white erect panicles in flowering).",
+      "severity_matrix": {
+        "Mild": {
+          "organic_treatment": "Install 5-8 pheromone traps/acre. Release Trichogramma japonicum egg parasitoids @ 40,000/acre.",
+          "chemical_treatment": "Cartap Hydrochloride 4% G @ 7.5 kg/acre in standing water.",
+          "dosage_hindi": "कार्टाप हाइड्रोक्लोराइड 4% G (7.5 किग्रा प्रति एकड़) खड़े पानी में बुरकें या फेरोमोन ट्रैप लगाएं।",
+          "irrigation_advice": "Maintain 2-3 inches of standing water during granular application."
+        },
+        "Moderate": {
+          "organic_treatment": "Spray Bacillus thuringiensis (Bt) @ 2g/L or Azadirachtin 1% @ 3ml/L water.",
+          "chemical_treatment": "Chlorantraniliprole 18.5% SC (Coragen) @ 0.3ml/L OR Fipronil 5% SC @ 2ml/L water.",
+          "dosage_hindi": "कोराजन (क्लोरेंट्रानिलिप्रोल 18.5% SC) 0.3 मिली/लीटर या फिप्रोनिल 5% SC (2 मिली/लीटर)।",
+          "irrigation_advice": "Ensure field is not submerged; keep normal moisture."
+        },
+        "Severe": {
+          "organic_treatment": "Clipping seedling leaf tips before transplanting; mass trapping with 15 pheromone traps/acre.",
+          "chemical_treatment": "Flubendiamide 39.35% SC (Fame) @ 0.25ml/L OR Chlorantraniliprole 0.4% G (Ferterra) @ 4 kg/acre.",
+          "dosage_hindi": "फेम (फ्लूबेंडियामाइड) 0.25 मिली प्रति लीटर पानी में छिड़कें। गंभीर टिलर्स को उखाड़कर नष्ट करें।",
+          "irrigation_advice": "Keep water level constant for 48 hours after application."
+        }
+      },
+      "pre_harvest_interval_days": 14,
+      "cibrc_approved": true
     }
   },
   "safety_protocols": {

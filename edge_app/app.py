@@ -74,10 +74,11 @@ UI_CONTENT = {
         "tab_camera": "📸 कैमरे से फोटो खींचें",
         "tab_upload": "📁 गैलरी / फोन से फोटो चुनें",
         "sample_btn_labels": {
-            "tomato_early_blight": "🍅 टमाटर (अगेती झुलसा)",
+            "tomato_bacterial_spot": "🦠 टमाटर (जीवाणु धब्बा)",
+            "tomato_yellow_leaf_curl": "🧬 टमाटर (पत्ता मरोड़ वायरस)",
+            "cotton_bollworm": "🐛 कपास (सुंडी / कीट प्रकोप)",
+            "tomato_early_blight": "🍄 टमाटर (अगेती झुलसा)",
             "tomato_late_blight": "🥔 टमाटर (पछेती झुलसा)",
-            "corn_rust": "🌽 मक्का (रतुआ रोग)",
-            "cotton_blight": "🌱 कपास (जीवाणु झुलसा)",
             "healthy_wheat": "🌾 गेहूं (स्वस्थ फसल)"
         },
         "camera_input_label": "कैमरे के सामने पत्ता रखकर फोटो खींचें:",
@@ -134,10 +135,11 @@ UI_CONTENT = {
         "tab_camera": "📸 Live Camera Scan",
         "tab_upload": "📁 Upload Leaf Photo",
         "sample_btn_labels": {
-            "tomato_early_blight": "🍅 Tomato (Early Blight)",
+            "tomato_bacterial_spot": "🦠 Tomato (Bacterial Spot)",
+            "tomato_yellow_leaf_curl": "🧬 Tomato (Yellow Leaf Curl)",
+            "cotton_bollworm": "🐛 Cotton (Bollworm Pest)",
+            "tomato_early_blight": "🍄 Tomato (Early Blight)",
             "tomato_late_blight": "🥔 Tomato (Late Blight)",
-            "corn_rust": "🌽 Corn (Common Rust)",
-            "cotton_blight": "🌱 Cotton (Bacterial Blight)",
             "healthy_wheat": "🌾 Wheat (Healthy Crop)"
         },
         "camera_input_label": "Hold leaf in front of camera and capture:",
@@ -201,6 +203,25 @@ lang_choice = st.sidebar.radio(
 selected_lang = "hindi" if "हिंदी" in lang_choice else "english"
 T = UI_CONTENT[selected_lang]
 
+# Crop Selection Filter in Sidebar
+st.sidebar.markdown("### 🌾 " + ("फसल का चयन" if selected_lang == "hindi" else "Target Crop"))
+crop_options = [
+    ("Auto-Detect", "🔍 सभी फसलें (Auto-Detect)" if selected_lang == "hindi" else "🔍 All Crops (Auto-Detect)"),
+    ("Tomato", "🍅 टमाटर (Tomato)"),
+    ("Cotton", "🌱 कपास (Cotton)"),
+    ("Rice (Paddy)", "🌾 धान / चावल (Rice)"),
+    ("Corn (Maize)", "🌽 मक्का (Corn)"),
+    ("Potato", "🥔 आलू (Potato)"),
+    ("Wheat", "🌾 गेहूं (Wheat)"),
+    ("Apple", "🍎 सेब (Apple)")
+]
+selected_crop_filter = st.sidebar.selectbox(
+    "फसल चुनें:" if selected_lang == "hindi" else "Select Crop Filter:",
+    [c[0] for c in crop_options],
+    format_func=lambda x: dict(crop_options).get(x, x),
+    index=0
+)
+
 # Hardware Telemetry Panel in Sidebar
 with st.sidebar.expander(T["telemetry_sidebar_header"], expanded=True):
     st.markdown(T["telemetry_sidebar_text"])
@@ -245,7 +266,12 @@ else:
 
 # Run Pipeline on Active Image
 with st.spinner(T["processing_spinner"]):
-    res = pipeline.process_leaf(active_image, language=selected_lang, class_hint=class_hint)
+    res = pipeline.process_leaf(
+        active_image,
+        language=selected_lang,
+        class_hint=class_hint,
+        crop_filter=selected_crop_filter
+    )
 
 vis = res["vision"]
 adv = res["advisory"]
@@ -368,12 +394,13 @@ tab_sample, tab_cam, tab_upload = st.tabs([
 
 with tab_sample:
     st.markdown(" ")
-    btn_cols = st.columns(5)
+    btn_cols = st.columns(6)
     samples_list = [
+        ("tomato_bacterial_spot", T["sample_btn_labels"]["tomato_bacterial_spot"]),
+        ("tomato_yellow_leaf_curl", T["sample_btn_labels"]["tomato_yellow_leaf_curl"]),
+        ("cotton_bollworm", T["sample_btn_labels"]["cotton_bollworm"]),
         ("tomato_early_blight", T["sample_btn_labels"]["tomato_early_blight"]),
         ("tomato_late_blight", T["sample_btn_labels"]["tomato_late_blight"]),
-        ("corn_rust", T["sample_btn_labels"]["corn_rust"]),
-        ("cotton_blight", T["sample_btn_labels"]["cotton_blight"]),
         ("healthy_wheat", T["sample_btn_labels"]["healthy_wheat"]),
     ]
     for idx, (s_key, s_label) in enumerate(samples_list):

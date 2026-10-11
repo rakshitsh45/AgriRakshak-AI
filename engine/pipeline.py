@@ -31,7 +31,8 @@ class AgriRakshakPipeline:
         self,
         image_input: Any,
         language: str = "hindi",
-        class_hint: Optional[str] = None
+        class_hint: Optional[str] = None,
+        crop_filter: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Executes complete edge diagnostic workflow:
@@ -42,7 +43,11 @@ class AgriRakshakPipeline:
         t_start = time.perf_counter()
 
         # Phase 1: Edge Vision Pass
-        vision_result = self.vision_engine.predict(image_input, class_hint=class_hint)
+        vision_result = self.vision_engine.predict(
+            image_input,
+            class_hint=class_hint,
+            crop_filter=crop_filter
+        )
 
         # Phase 2: Llama Reasoning & ICAR Grounding Pass
         advisory_result = self.advisory_engine.generate_advisory(
