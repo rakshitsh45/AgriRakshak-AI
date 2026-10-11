@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+*$py.class
+edge_app/audio_cache/
+.vscode/
+.idea/

@@ -66,6 +66,7 @@ UI_CONTENT = {
         "heatmap_header": "🎯 बीमारी विश्लेषण व हीटमैप",
         "heatmap_caption": "पीली रेखाएं और लाल उभार बीमारी से प्रभावित हिस्से को दर्शाते हैं",
         "audio_section_header": "🔊 किसान ऑडियो सलाह (सुनकर समझें)",
+        "audio_transcript_label": "बोली गई किसान सलाह:",
         "advisory_section_header": "🧠 लामा 3.2 ऑन-डिवाइस वैज्ञानिक सलाह व उपचार",
         "deep_telemetry_header": "🔬 विस्तृत SoC प्रदर्शन व लेटेंसी मेट्रिक्स",
         "check_new_header": "🔄 नया पौधा या अगली फसल जांचें (Check Next Plant)",
@@ -127,6 +128,7 @@ UI_CONTENT = {
         "heatmap_header": "🎯 Lesion Segmentation Heatmap",
         "heatmap_caption": "Yellow contours and red highlight indicate active necrotic lesions",
         "audio_section_header": "🔊 Spoken Voice Advisory",
+        "audio_transcript_label": "Spoken Advisory Transcript:",
         "advisory_section_header": "🧠 Llama 3.2 ExecuTorch Scientific Field Advisory",
         "deep_telemetry_header": "🔬 In-Depth SoC Performance & Execution Telemetry",
         "check_new_header": "🔄 Check Another Plant or New Crop",
@@ -156,6 +158,30 @@ UI_CONTENT = {
 # Custom Styling
 st.markdown("""
 <style>
+    /* Prevent Streamlit from dimming or greying out the page during rerun */
+    [data-testid="stAppViewContainer"],
+    [data-testid="stAppViewBlockContainer"],
+    .main,
+    .main .block-container,
+    .stAppRunning,
+    div[data-testid="stAppViewContainer"] > section,
+    div[data-testid="stMain"] {
+        opacity: 1 !important;
+        filter: none !important;
+        transition: none !important;
+    }
+    .stAppRunning * {
+        opacity: 1 !important;
+        filter: none !important;
+    }
+    /* Hide top running decoration bar to eliminate grey flashing */
+    [data-testid="stDecoration"] {
+        display: none !important;
+    }
+    [data-testid="stStatusWidget"] {
+        visibility: hidden !important;
+    }
+
     .main-header {
         background: linear-gradient(90deg, #134e4a, #065f46, #047857);
         color: white;
@@ -328,9 +354,14 @@ with col_img2:
 
 # Spoken Audio Advisory
 st.subheader(T["audio_section_header"])
-st.markdown(res["audio_html"], unsafe_allow_html=True)
-if res.get("audio_bytes"):
-    st.audio(res["audio_bytes"], format="audio/wav")
+c_audio_box, c_audio_desc = st.columns([1, 1])
+with c_audio_box:
+    st.markdown(res["audio_html"], unsafe_allow_html=True)
+    if res.get("audio_bytes"):
+        st.audio(res["audio_bytes"], format=res.get("audio_mime", "audio/mp3"), autoplay=False)
+with c_audio_desc:
+    spoken_txt = adv.get("audio_speech_text", "")
+    st.info(f"🗣️ **{T['audio_transcript_label']}**\n\n_{spoken_txt}_")
 
 # Llama 3.2 Grounded Advisory
 st.subheader(T["advisory_section_header"])
