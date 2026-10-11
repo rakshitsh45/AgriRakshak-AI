@@ -9,8 +9,9 @@ import sys
 import time
 import numpy as np
 import cv2
-from PIL import Image
+import base64
 import streamlit as st
+import streamlit.components.v1 as components
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
@@ -257,8 +258,12 @@ if "source_type" not in st.session_state:
     st.session_state["source_type"] = "sample"
 if "sample_name" not in st.session_state:
     st.session_state["sample_name"] = "tomato_early_blight"
-if "uploaded_image" not in st.session_state:
-    st.session_state["uploaded_image"] = None
+if "active_image_rgb" not in st.session_state:
+    st.session_state["active_image_rgb"] = create_sample_leaf_image("tomato_early_blight")
+if "last_upload_id" not in st.session_state:
+    st.session_state["last_upload_id"] = None
+if "last_cam_id" not in st.session_state:
+    st.session_state["last_cam_id"] = None
 
 # Top Header
 st.markdown(f"""
@@ -278,17 +283,13 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Determine Active Image to Diagnose
-active_image = None
-class_hint = None
-
-if st.session_state["source_type"] == "sample":
-    active_image = create_sample_leaf_image(st.session_state["sample_name"])
-    class_hint = st.session_state["sample_name"]
-elif st.session_state["source_type"] in ["upload", "camera"] and st.session_state["uploaded_image"] is not None:
-    active_image = st.session_state["uploaded_image"]
-else:
+active_image = st.session_state.get("active_image_rgb")
+if active_image is None:
     active_image = create_sample_leaf_image("tomato_early_blight")
-    class_hint = "tomato_early_blight"
+    st.session_state["active_image_rgb"] = active_image
+
+# class_hint is ONLY provided for preset demo samples; uploaded & camera leaves undergo pure AI vision analysis!
+class_hint = st.session_state["sample_name"] if st.session_state["source_type"] == "sample" else None
 
 # Run Pipeline on Active Image
 with st.spinner(T["processing_spinner"]):
@@ -356,9 +357,64 @@ with col_img2:
 st.subheader(T["audio_section_header"])
 c_audio_box, c_audio_desc = st.columns([1, 1])
 with c_audio_box:
-    st.markdown(res["audio_html"], unsafe_allow_html=True)
-    if res.get("audio_bytes"):
-        st.audio(res["audio_bytes"], format=res.get("audio_mime", "audio/mp3"), autoplay=False)
+    audio_bytes = res.get("audio_bytes")
+    audio_mime = res.get("audio_mime", "audio/mp3")
+    if audio_bytes and len(audio_bytes) > 0:
+        audio_b64 = base64.b64encode(audio_bytes).decode("utf-8")
+        btn_label = "🔊 आवाज़ में पूरी सलाह सुनें (Play Spoken Advisory)" if selected_lang == "hindi" else "🔊 Listen to Complete Spoken Advisory"
+        player_html = f"""
+        <div style="background: #f0fdf4; border: 2px solid #22c55e; border-radius: 12px; padding: 14px 18px; margin-bottom: 8px; font-family: system-ui, -apple-system, sans-serif;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <button id="playBtn" onclick="togglePlay()" style="
+                    background: linear-gradient(135deg, #15803d, #166534);
+                    color: white;
+                    border: none;
+                    padding: 10px 22px;
+                    font-size: 15px;
+                    font-weight: 700;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    box-shadow: 0 4px 12px rgba(21, 128, 61, 0.35);
+                ">
+                    ▶️ {btn_label}
+                </button>
+                <span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">
+                    🔒 100% Offline Edge Audio
+                </span>
+            </div>
+            <audio id="agriAudio" controls style="width: 100%; height: 38px;">
+                <source src="data:{audio_mime};base64,{audio_b64}" type="{audio_mime}">
+                Your browser does not support audio playback.
+            </audio>
+        </div>
+        <script>
+            var audio = document.getElementById('agriAudio');
+            var btn = document.getElementById('playBtn');
+            function togglePlay() {{
+                if (audio.paused) {{
+                    audio.play();
+                    btn.innerHTML = '⏸️ रोकें (Pause)';
+                    btn.style.background = 'linear-gradient(135deg, #b91c1c, #991b1b)';
+                }} else {{
+                    audio.pause();
+                    btn.innerHTML = '▶️ {btn_label}';
+                    btn.style.background = 'linear-gradient(135deg, #15803d, #166534)';
+                }}
+            }}
+            audio.onended = function() {{
+                btn.innerHTML = '▶️ {btn_label}';
+                btn.style.background = 'linear-gradient(135deg, #15803d, #166534)';
+            }};
+        </script>
+        """
+        components.html(player_html, height=135)
+        st.audio(audio_bytes, format=audio_mime)
+    else:
+        st.warning("ऑडियो स्ट्रीम तैयार हो रही है..." if selected_lang == "hindi" else "Audio advisory is synthesizing...")
+
 with c_audio_desc:
     spoken_txt = adv.get("audio_speech_text", "")
     st.info(f"🗣️ **{T['audio_transcript_label']}**\n\n_{spoken_txt}_")
@@ -439,25 +495,44 @@ with tab_sample:
             if st.button(s_label, key=f"btn_sample_{s_key}", use_container_width=True):
                 st.session_state["source_type"] = "sample"
                 st.session_state["sample_name"] = s_key
-                st.session_state["uploaded_image"] = None
+                st.session_state["active_image_rgb"] = create_sample_leaf_image(s_key)
+                st.session_state["last_upload_id"] = None
+                st.session_state["last_cam_id"] = None
                 st.rerun()
 
 with tab_cam:
     st.markdown(" ")
-    cam_snap = st.camera_input(T["camera_input_label"])
+    cam_snap = st.camera_input(T["camera_input_label"], key="camera_widget_key")
     if cam_snap is not None:
-        file_bytes = np.asarray(bytearray(cam_snap.read()), dtype=np.uint8)
-        img_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-        st.session_state["uploaded_image"] = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-        st.session_state["source_type"] = "camera"
-        st.rerun()
+        raw_cam_bytes = cam_snap.getvalue()
+        current_cam_id = f"cam_{len(raw_cam_bytes)}"
+        if current_cam_id != st.session_state.get("last_cam_id") and len(raw_cam_bytes) > 0:
+            try:
+                file_bytes = np.asarray(bytearray(raw_cam_bytes), dtype=np.uint8)
+                img_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+                if img_bgr is not None:
+                    st.session_state["active_image_rgb"] = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+                    st.session_state["source_type"] = "camera"
+                    st.session_state["last_cam_id"] = current_cam_id
+                    st.rerun()
+            except Exception:
+                pass
 
 with tab_upload:
     st.markdown(" ")
-    uploaded_file = st.file_uploader(T["upload_input_label"], type=["jpg", "jpeg", "png"])
+    uploaded_file = st.file_uploader(T["upload_input_label"], type=["jpg", "jpeg", "png"], key="uploader_widget_key")
     if uploaded_file is not None:
-        file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-        img_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-        st.session_state["uploaded_image"] = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-        st.session_state["source_type"] = "upload"
-        st.rerun()
+        current_up_id = f"{uploaded_file.name}_{uploaded_file.size}"
+        if current_up_id != st.session_state.get("last_upload_id"):
+            try:
+                raw_bytes = uploaded_file.getvalue()
+                if len(raw_bytes) > 0:
+                    file_bytes = np.asarray(bytearray(raw_bytes), dtype=np.uint8)
+                    img_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+                    if img_bgr is not None:
+                        st.session_state["active_image_rgb"] = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+                        st.session_state["source_type"] = "upload"
+                        st.session_state["last_upload_id"] = current_up_id
+                        st.rerun()
+            except Exception:
+                pass
