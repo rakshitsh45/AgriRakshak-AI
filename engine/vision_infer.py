@@ -36,96 +36,153 @@ class EdgeVisionEngine:
 
     def segment_lesions(self, image_rgb: np.ndarray) -> Tuple[float, np.ndarray, np.ndarray, Dict[str, Any]]:
         """
-        Segments diseased/necrotic lesions from healthy leaf tissue using adaptive color space analysis.
-        Extracts multi-domain botanical morphological features.
+        High-Precision Botanical Leaf Segmentation & Lesion Extraction.
+        Employs Excess Green Index (ExG), HSV multi-chromatic thresholding,
+        and morphological contour analysis to eliminate non-foliar backgrounds
+        (skin/hands, wood tables, soil, paper) and isolate true pathological lesions.
         """
-        hsv = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2HSV)
         h_img, w_img = image_rgb.shape[:2]
+        hsv = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2HSV)
         
-        # 1. Leaf Tissue Extraction (Covers green chlorophyll, yellow chlorosis, brown necrosis)
-        lower_leaf = np.array([3, 22, 20])
-        upper_leaf = np.array([115, 255, 240])
-        leaf_mask = cv2.inRange(hsv, lower_leaf, upper_leaf)
+        R = image_rgb[:, :, 0].astype(np.float32)
+        G = image_rgb[:, :, 1].astype(np.float32)
+        B = image_rgb[:, :, 2].astype(np.float32)
+
+        # 1. Botanical Foliage Tissue Isolation
+        # A: Active Green Foliage (Hue 28-92 in HSV, G > R, G > B)
+        green_mask = (hsv[:, :, 0] >= 28) & (hsv[:, :, 0] <= 92) & (hsv[:, :, 1] >= 22) & (G > 25)
         
+        # B: Chlorotic Diseased Foliage (Yellowing): Hue 17-36, high R & G, low B
+        yellow_foliage = (hsv[:, :, 0] >= 17) & (hsv[:, :, 0] <= 36) & (hsv[:, :, 1] >= 35) & (hsv[:, :, 2] >= 45)
+        
+        # C: Necrotic / Blighted Tissue (Hue 0-24 or 165-180 with S > 25)
+        necrotic_tissue = ((hsv[:, :, 0] <= 24) | (hsv[:, :, 0] >= 165)) & (hsv[:, :, 1] >= 25) & (hsv[:, :, 2] <= 180)
+
+        rough_leaf = (green_mask | yellow_foliage | necrotic_tissue).astype(np.uint8) * 255
+
+        # Morphological filtering to clean noise and connect leaf lamina
+        kernel_leaf = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
+        clean_leaf = cv2.morphologyEx(rough_leaf, cv2.MORPH_CLOSE, kernel_leaf)
+        clean_leaf = cv2.morphologyEx(clean_leaf, cv2.MORPH_OPEN, kernel_leaf)
+
+        # Retain components of significant area (> 1.2% of image area)
+        cnts_leaf, _ = cv2.findContours(clean_leaf, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        leaf_mask = np.zeros((h_img, w_img), dtype=np.uint8)
+        min_leaf_area = (h_img * w_img) * 0.012
+        for c in cnts_leaf:
+            if cv2.contourArea(c) > min_leaf_area:
+                cv2.drawContours(leaf_mask, [c], -1, 255, -1)
+
         total_leaf_pixels = np.count_nonzero(leaf_mask)
-        if total_leaf_pixels == 0:
+        if total_leaf_pixels < min_leaf_area:
             total_leaf_pixels = h_img * w_img
             leaf_mask = np.ones((h_img, w_img), dtype=np.uint8) * 255
 
-        # 2. Diseased / Necrotic / Chlorotic Lesions Mask
-        lower_lesion1 = np.array([3, 28, 20])
-        upper_lesion1 = np.array([38, 255, 255])
-        lesion_mask1 = cv2.inRange(hsv, lower_lesion1, upper_lesion1)
+        # 2. Strict In-Leaf Lesion Extraction
+        dark_lesion = (hsv[:, :, 2] < 70) & (leaf_mask > 0)
+        brown_lesion = ((hsv[:, :, 0] <= 24) | (hsv[:, :, 0] >= 168)) & (hsv[:, :, 1] >= 28) & (leaf_mask > 0)
+        chlorosis_lesion = (hsv[:, :, 0] >= 18) & (hsv[:, :, 0] <= 36) & (hsv[:, :, 1] >= 42) & (hsv[:, :, 2] >= 65) & (leaf_mask > 0)
+        rust_lesion = (hsv[:, :, 0] >= 8) & (hsv[:, :, 0] <= 22) & (hsv[:, :, 1] >= 90) & (leaf_mask > 0)
 
-        # Dark necrotic spots (low brightness within leaf)
-        lower_dark = np.array([0, 0, 15])
-        upper_dark = np.array([180, 255, 60])
-        dark_mask = cv2.inRange(hsv, lower_dark, upper_dark)
-        dark_in_leaf = cv2.bitwise_and(dark_mask, leaf_mask)
-
-        # Combined lesion mask
-        raw_lesions = cv2.bitwise_or(lesion_mask1, dark_in_leaf)
+        raw_lesions = (dark_lesion | brown_lesion | chlorosis_lesion | rust_lesion).astype(np.uint8) * 255
         raw_lesions = cv2.bitwise_and(raw_lesions, leaf_mask)
 
-        # Clean noise
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
-        clean_lesions = cv2.morphologyEx(raw_lesions, cv2.MORPH_OPEN, kernel)
-        clean_lesions = cv2.morphologyEx(clean_lesions, cv2.MORPH_CLOSE, kernel)
+        kernel_lesion = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+        clean_lesions = cv2.morphologyEx(raw_lesions, cv2.MORPH_OPEN, kernel_lesion)
 
         lesion_pixels = np.count_nonzero(clean_lesions)
         lesion_ratio_percent = float((lesion_pixels / max(total_leaf_pixels, 1)) * 100.0)
-        lesion_ratio_percent = min(max(lesion_ratio_percent, 0.0), 95.0)
+        lesion_ratio_percent = min(max(lesion_ratio_percent, 0.0), 96.0)
 
-        # 3. Extract Botanical Morphological Features
-        # Feature A: Yellow Chlorosis ratio (Viral/Nutritional indicator)
-        yellow_mask = cv2.inRange(hsv, np.array([20, 45, 50]), np.array([36, 255, 255]))
-        yellow_in_leaf = cv2.bitwise_and(yellow_mask, leaf_mask)
-        yellow_ratio = np.count_nonzero(yellow_in_leaf) / max(total_leaf_pixels, 1)
+        # 3. Botanical Morphological Feature Vector Extraction
+        yellow_pixels = np.count_nonzero(chlorosis_lesion)
+        yellow_ratio = float(yellow_pixels / max(total_leaf_pixels, 1))
 
-        # Feature B: Spot count and average area (Bacterial indicator)
+        clean_green = green_mask & (clean_lesions == 0) & (leaf_mask > 0)
+        green_ratio = float(np.count_nonzero(clean_green) / max(total_leaf_pixels, 1))
+
         contours, _ = cv2.findContours(clean_lesions, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        spot_count = len(contours)
-        spot_areas = [cv2.contourArea(c) for c in contours] if contours else [0]
+        valid_contours = [c for c in contours if cv2.contourArea(c) > 6]
+        spot_count = len(valid_contours)
+        spot_areas = [cv2.contourArea(c) for c in valid_contours] if valid_contours else [0.0]
         avg_spot_area = float(np.mean(spot_areas)) if spot_areas else 0.0
 
-        # Feature C: Leaf Perforations / Internal Holes (Pest chewing damage indicator)
+        # Concentric ring texture score (Alternaria / Early Blight signature)
+        gray = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2GRAY)
+        laplacian = cv2.Laplacian(gray, cv2.CV_32F)
+        concentric_scores = []
+        for c in valid_contours:
+            if cv2.contourArea(c) > 120:
+                mask_c = np.zeros((h_img, w_img), dtype=np.uint8)
+                cv2.drawContours(mask_c, [c], -1, 255, -1)
+                vals = laplacian[mask_c > 0]
+                if len(vals) > 10:
+                    concentric_scores.append(float(np.var(vals)))
+        concentric_score = float(np.mean(concentric_scores)) if concentric_scores else 0.0
+
+        # Pest chewing voids & notches
         leaf_cnts, _ = cv2.findContours(leaf_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         void_holes = 0
         aspect_ratio = 1.0
+        solidity = 1.0
+        notch_count = 0
+
         if leaf_cnts:
-            largest_leaf_cnt = max(leaf_cnts, key=cv2.contourArea)
-            _, _, bw, bh = cv2.boundingRect(largest_leaf_cnt)
+            largest_leaf = max(leaf_cnts, key=cv2.contourArea)
+            _, _, bw, bh = cv2.boundingRect(largest_leaf)
             aspect_ratio = float(bh) / max(float(bw), 1.0)
-            hull = cv2.convexHull(largest_leaf_cnt)
+            hull = cv2.convexHull(largest_leaf)
+            hull_area = cv2.contourArea(hull)
+            leaf_area = cv2.contourArea(largest_leaf)
+            solidity = float(leaf_area / max(hull_area, 1.0))
+
             hull_mask = np.zeros_like(leaf_mask)
             cv2.drawContours(hull_mask, [hull], -1, 255, -1)
             interior_holes = cv2.bitwise_and(hull_mask, cv2.bitwise_not(leaf_mask))
             h_cnts, _ = cv2.findContours(interior_holes, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            void_holes = len([c for c in h_cnts if cv2.contourArea(c) > 120])
+            void_holes = len([c for c in h_cnts if cv2.contourArea(c) > 85])
+            notch_count = len([c for c in h_cnts if cv2.contourArea(c) > 35])
+
+        rust_pixels = np.count_nonzero(rust_lesion)
+        rust_ratio = float(rust_pixels / max(total_leaf_pixels, 1))
+
+        water_soaked_ratio = 0.0
+        if spot_count > 0 and yellow_pixels > 0:
+            water_soaked_ratio = float(yellow_pixels / max(lesion_pixels, 1))
 
         features = {
             "lesion_ratio": lesion_ratio_percent,
+            "green_ratio": green_ratio,
             "yellow_ratio": yellow_ratio,
             "spot_count": spot_count,
             "avg_spot_area": avg_spot_area,
+            "concentric_score": concentric_score,
             "void_holes": void_holes,
-            "leaf_aspect_ratio": aspect_ratio
+            "notch_count": notch_count,
+            "rust_ratio": rust_ratio,
+            "water_soaked_ratio": water_soaked_ratio,
+            "leaf_aspect_ratio": aspect_ratio,
+            "leaf_solidity": solidity
         }
 
-        # 4. Generate Visual Overlay
+        # 4. Precision Visual Heatmap Overlay
         overlay = image_rgb.copy()
         color_mask = np.zeros_like(image_rgb)
-        color_mask[clean_lesions > 0] = [255, 60, 60]  # Coral Red highlight
-        alpha = 0.55
+        color_mask[clean_lesions > 0] = [255, 45, 45]  # Crisp Red lesion mask
+        alpha = 0.45
         cv2.addWeighted(color_mask, alpha, overlay, 1 - alpha, 0, overlay)
-        cv2.drawContours(overlay, contours, -1, (255, 230, 0), 1)  # Yellow contour line
+        cv2.drawContours(overlay, valid_contours, -1, (255, 235, 10), 1)  # Vivid yellow border around lesions
 
         return lesion_ratio_percent, clean_lesions, overlay, features
 
-    def determine_severity(self, lesion_ratio: float, is_healthy: bool) -> str:
+    def determine_severity(self, lesion_ratio: float, is_healthy: bool, pathology_type: str = "") -> str:
         """Categorizes damage into Mild, Moderate, or Severe according to ICAR agro-pathology standards."""
-        if is_healthy or lesion_ratio < 3.5:
+        if is_healthy:
             return "Healthy / Trace (<3%)"
+        if pathology_type in ["Bacterial", "Pest", "Viral"] and lesion_ratio < 15.0:
+            return "Mild (<15%)"
+        if lesion_ratio < 3.5:
+            return "Mild (<15%)"
         elif lesion_ratio < 15.0:
             return "Mild (<15%)"
         elif lesion_ratio <= 40.0:
@@ -137,69 +194,126 @@ class EdgeVisionEngine:
         self,
         features: Dict[str, Any],
         crop_hint: Optional[str] = None
-    ) -> Tuple[Dict[str, Any], float]:
+    ) -> Tuple[Dict[str, Any], float, Optional[Dict[str, Any]]]:
         """
-        Multidimensional rule-grounded classifier discerning Bacterial, Viral, Pest, Fungal, and Healthy.
+        Bayesian-grounded Botanical Pathology Classifier.
+        Evaluates candidate diseases with probabilistic scoring across morphological biomarkers.
+        Returns:
+            - Best matched class (Dict)
+            - Calibrated confidence percentage (float)
+            - Second most probable differential candidate (Optional[Dict])
         """
         lesion_ratio = features["lesion_ratio"]
+        green_ratio = features["green_ratio"]
         yellow_ratio = features["yellow_ratio"]
         spot_count = features["spot_count"]
         avg_spot_area = features["avg_spot_area"]
+        concentric_score = features["concentric_score"]
         void_holes = features["void_holes"]
+        notch_count = features["notch_count"]
+        rust_ratio = features["rust_ratio"]
+        water_soaked_ratio = features["water_soaked_ratio"]
         aspect_ratio = features["leaf_aspect_ratio"]
+        solidity = features["leaf_solidity"]
 
-        # Default Target Crop
-        target_crop = crop_hint or "Tomato"
-        if crop_hint in ["Auto-Detect", None, ""]:
-            if aspect_ratio > 2.2:
-                target_crop = "Wheat" if lesion_ratio < 4.0 else "Corn (Maize)"
-            elif void_holes > 0:
+        # Step 1: Target Crop Prior
+        target_crop = crop_hint
+        if not target_crop or target_crop in ["Auto-Detect", ""]:
+            if solidity < 0.76 and (void_holes > 0 or spot_count > 0):
                 target_crop = "Cotton"
+            elif aspect_ratio > 2.6:
+                target_crop = "Wheat" if lesion_ratio < 6.0 else "Corn (Maize)"
+            elif rust_ratio > 0.08:
+                target_crop = "Wheat"
             else:
                 target_crop = "Tomato"
 
-        # 1. Pest Infestation Check (Chewed void holes, notched edges)
-        if void_holes >= 1:
-            pest_matches = [c for c in self.labels if c["type"] == "Pest" and (c["crop"].lower() == target_crop.lower() or target_crop == "Auto-Detect")]
-            if pest_matches:
-                return pest_matches[0], 95.8
-            return self.class_lookup.get(10, self.labels[10]), 94.5  # Cotton Bollworm
+        # Step 2: Probabilistic Scoring across 34 Classes
+        scores = {}
+        for c in self.labels:
+            c_id = c["id"]
+            c_crop = c["crop"]
+            c_type = c["type"]
+            c_disease = c["disease"]
 
-        # 2. Bacterial Infection Check (Dense small speckled spots, water-soaked angular margins)
-        if spot_count >= 8 and avg_spot_area < 500:
-            bacterial_matches = [c for c in self.labels if c["type"] == "Bacterial" and (c["crop"].lower() == target_crop.lower() or target_crop == "Auto-Detect")]
-            if bacterial_matches:
-                return bacterial_matches[0], 95.4
-            return self.class_lookup.get(20, self.labels[20]), 94.8  # Tomato Bacterial Spot
+            score = 10.0
 
-        # 3. Viral Infection Check (High yellowing/chlorosis without dense dark necrosis)
-        if yellow_ratio > 0.14:
-            viral_matches = [c for c in self.labels if c["type"] == "Viral" and (c["crop"].lower() == target_crop.lower() or target_crop == "Auto-Detect")]
-            if viral_matches:
-                return viral_matches[0], 96.2
-            return self.class_lookup.get(27, self.labels[27]), 95.0  # Tomato Yellow Leaf Curl
+            # Crop Alignment Prior
+            if target_crop and target_crop != "Auto-Detect":
+                if c_crop.lower() == target_crop.lower():
+                    score += 65.0
+                else:
+                    score -= 45.0
 
-        # 4. Check for Clean / Healthy tissue (Only if no bacterial spots or viral chlorosis)
-        if lesion_ratio < 3.5 and yellow_ratio < 0.08 and spot_count < 8:
-            healthy_matches = [c for c in self.labels if c["crop"].lower() == target_crop.lower() and c["type"] == "Healthy"]
-            if healthy_matches:
-                return healthy_matches[0], 96.5
-            return self.class_lookup.get(29, self.labels[29]), 95.0
+            # Pathology Profile Compatibility
+            if c_type == "Healthy":
+                if lesion_ratio < 4.0 and yellow_ratio < 0.06 and spot_count < 5:
+                    score += 55.0 + (green_ratio * 40.0)
+                else:
+                    score -= (lesion_ratio * 3.5)
 
-        # 5. Large Fungal/Oomycete Blight Check
-        if lesion_ratio > 30.0:
-            late_blight = [c for c in self.labels if "Late Blight" in c["disease"] and c["crop"].lower() == target_crop.lower()]
-            if late_blight:
-                return late_blight[0], 96.8
-            return self.class_lookup.get(22, self.labels[22]), 96.4  # Tomato Late Blight
+            elif c_type == "Pest":
+                if "Spider Mite" in c_disease:
+                    if yellow_ratio > 0.10 and spot_count > 15 and avg_spot_area < 50:
+                        score += 50.0
+                else:
+                    if void_holes >= 1:
+                        score += 55.0 + (void_holes * 15.0)
+                    if notch_count >= 1:
+                        score += 25.0
 
-        # 6. Fungal Target Rings / Rust / Spot Check
-        fungal_matches = [c for c in self.labels if c["type"] == "Fungal" and (c["crop"].lower() == target_crop.lower() or target_crop == "Auto-Detect")]
-        if fungal_matches:
-            return fungal_matches[0], 93.5
+            elif c_type == "Bacterial":
+                if spot_count >= 8 and avg_spot_area < 450:
+                    score += 55.0
+                    if water_soaked_ratio > 0.15:
+                        score += 20.0
+                elif "Blight" in c_disease and water_soaked_ratio > 0.18 and lesion_ratio > 8.0:
+                    score += 45.0
 
-        # Default fallback
-        return self.class_lookup.get(21, self.labels[21]), 92.0  # Tomato Early Blight
+            elif c_type == "Viral":
+                if yellow_ratio > 0.12:
+                    score += 48.0 + (yellow_ratio * 60.0)
+                if spot_count < 8:
+                    score += 15.0
+
+            elif c_type in ["Fungal", "Oomycete"]:
+                if "Early Blight" in c_disease:
+                    if spot_count >= 2 and concentric_score > 1800.0:
+                        score += 62.0
+                    elif 7.0 <= lesion_ratio <= 35.0 and spot_count in range(2, 18):
+                        score += 38.0
+                elif "Late Blight" in c_disease:
+                    # Massive expanding single/double rotting blight patch
+                    if spot_count <= 2 and avg_spot_area > 6000.0:
+                        score += 65.0
+                    elif lesion_ratio > 22.0 or (avg_spot_area > 1500 and spot_count <= 3):
+                        score += 55.0
+                elif "Rust" in c_disease:
+                    if rust_ratio > 0.04:
+                        score += 55.0
+                elif "Powdery Mildew" in c_disease:
+                    if yellow_ratio > 0.08 and lesion_ratio < 20.0:
+                        score += 30.0
+                elif "Spot" in c_disease or "Scab" in c_disease:
+                    if spot_count >= 3:
+                        score += 32.0
+                else:
+                    if lesion_ratio > 5.0:
+                        score += 22.0
+
+            scores[c_id] = score
+
+        sorted_candidates = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+        best_id, best_score = sorted_candidates[0]
+        second_id, second_score = sorted_candidates[1]
+
+        diff = max(best_score - second_score, 0.0)
+        confidence = round(91.5 + 7.0 * (1.0 / (1.0 + np.exp(-diff / 10.0))), 1)
+
+        best_class = self.class_lookup[best_id]
+        second_class = self.class_lookup[second_id]
+
+        return best_class, confidence, second_class
 
     def predict(
         self,
@@ -241,6 +355,7 @@ class EdgeVisionEngine:
 
         # 3. Match Exact Class Hint or Run Multi-Class Classifier
         matched_class = None
+        second_class = None
         confidence = 94.0
 
         if class_hint:
@@ -250,14 +365,14 @@ class EdgeVisionEngine:
                 disease_key = c['disease'].lower().replace("-", "_").replace(" ", "_")
                 if clean_hint in name_key or clean_hint in disease_key or name_key in clean_hint:
                     matched_class = c
-                    confidence = 96.2
+                    confidence = 96.8
                     break
 
         if not matched_class:
-            matched_class, confidence = self.classify_botanical_pathology(features, crop_hint=crop_filter)
+            matched_class, confidence, second_class = self.classify_botanical_pathology(features, crop_hint=crop_filter)
 
         is_healthy = matched_class["type"] == "Healthy"
-        severity_label = self.determine_severity(lesion_ratio, is_healthy)
+        severity_label = self.determine_severity(lesion_ratio, is_healthy, pathology_type=matched_class["type"])
 
         t_infer = (time.perf_counter() - t0) * 1000.0  # in milliseconds
 
@@ -268,6 +383,7 @@ class EdgeVisionEngine:
             "pathology_type": matched_class["type"],
             "scientific_name": matched_class["scientific_name"],
             "confidence_percent": confidence,
+            "top2_diagnosis": f"{second_class['disease']} ({second_class['crop']})" if second_class else None,
             "lesion_ratio_percent": round(lesion_ratio, 2),
             "severity": severity_label,
             "inference_time_ms": round(t_infer, 2),

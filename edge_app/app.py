@@ -353,6 +353,39 @@ with col_img2:
     st.subheader(T["heatmap_header"])
     st.image(vis["annotated_image"], caption=T["heatmap_caption"], use_container_width=True)
 
+# Precision Biomarkers & Differential Diagnosis Panel
+bf = vis.get("botanical_features", {})
+top2 = vis.get("top2_diagnosis")
+precision_title = "🔬 ऑन-डिवाइस वनस्पति बायोमार्कर व सटीक विश्लेषण (Precision Biomarkers)" if selected_lang == "hindi" else "🔬 On-Device Botanical Biomarkers & Precision Analytics"
+diff_label = f"वैकल्पिक संभावना (Differential): {top2}" if selected_lang == "hindi" else f"Differential Diagnosis: {top2}"
+
+st.markdown(f"""
+<div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 14px 18px; margin-top: 14px; margin-bottom: 22px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <span style="font-weight: 700; color: #0f172a; font-size: 15px;">{precision_title}</span>
+        {f'<span style="background: #e2e8f0; color: #334155; font-size: 12px; padding: 4px 12px; border-radius: 14px; font-weight: 600;">{diff_label}</span>' if top2 else ''}
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 12px; font-size: 13px;">
+        <div style="background: white; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+            <div style="color: #64748b; font-size: 11px;">{'🍃 स्वस्थ ऊतक (Chlorophyll)' if selected_lang == 'hindi' else '🍃 Active Chlorophyll'}</div>
+            <div style="font-weight: 700; color: #16a34a; font-size: 16px;">{bf.get('green_ratio', 0)*100:.1f}%</div>
+        </div>
+        <div style="background: white; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+            <div style="color: #64748b; font-size: 11px;">{'🟡 पीलापन (Chlorosis)' if selected_lang == 'hindi' else '🟡 Chlorosis Ratio'}</div>
+            <div style="font-weight: 700; color: #d97706; font-size: 16px;">{bf.get('yellow_ratio', 0)*100:.1f}%</div>
+        </div>
+        <div style="background: white; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+            <div style="color: #64748b; font-size: 11px;">{'🎯 घावों / धब्बों की संख्या' if selected_lang == 'hindi' else '🎯 Spot Count'}</div>
+            <div style="font-weight: 700; color: #dc2626; font-size: 16px;">{bf.get('spot_count', 0)}</div>
+        </div>
+        <div style="background: white; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+            <div style="color: #64748b; font-size: 11px;">{'🐛 कीट छिद्र (Chewed Voids)' if selected_lang == 'hindi' else '🐛 Chewed Holes'}</div>
+            <div style="font-weight: 700; color: #7c3aed; font-size: 16px;">{bf.get('void_holes', 0)}</div>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
 # Spoken Audio Advisory
 st.subheader(T["audio_section_header"])
 c_audio_box, c_audio_desc = st.columns([1, 1])
