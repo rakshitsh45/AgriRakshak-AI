@@ -130,7 +130,16 @@ class EdgeVisionEngine:
         if leaf_cnts:
             largest_leaf = max(leaf_cnts, key=cv2.contourArea)
             _, _, bw, bh = cv2.boundingRect(largest_leaf)
-            aspect_ratio = float(bh) / max(float(bw), 1.0)
+            if len(largest_leaf) >= 5:
+                try:
+                    (cx, cy), (rw, rh), angle = cv2.minAreaRect(largest_leaf)
+                    major_dim = max(rw, rh)
+                    minor_dim = max(min(rw, rh), 1.0)
+                    aspect_ratio = float(major_dim / minor_dim)
+                except Exception:
+                    aspect_ratio = float(max(bh, bw)) / max(min(bh, bw), 1.0)
+            else:
+                aspect_ratio = float(max(bh, bw)) / max(min(bh, bw), 1.0)
             hull = cv2.convexHull(largest_leaf)
             hull_area = cv2.contourArea(hull)
             leaf_area = cv2.contourArea(largest_leaf)
@@ -219,48 +228,65 @@ class EdgeVisionEngine:
         # Step 1: Target Crop Prior
         target_crop = crop_hint
         if not target_crop or target_crop in ["Auto-Detect", ""]:
-            if solidity < 0.76 and (void_holes > 0 or spot_count > 0):
+            # Botanical Morphology for Auto-Detection:
+            if aspect_ratio > 3.0:
+                # Ultra-slender cereal grass blade -> Wheat or Rice
+                target_crop = "Wheat" if (rust_ratio > 0.03 or lesion_ratio < 6.0) else "Rice (Paddy)"
+            elif aspect_ratio > 1.65:
+                # Elongated monocot strap blade -> Corn (Maize)
+                target_crop = "Corn (Maize)"
+            elif aspect_ratio < 1.65 and (void_holes > 0 or notch_count > 0):
+                # Broad leaf with chewing damage/notches -> Cotton
                 target_crop = "Cotton"
-            elif aspect_ratio > 2.6:
-                target_crop = "Wheat" if lesion_ratio < 6.0 else "Corn (Maize)"
-            elif rust_ratio > 0.08:
-                target_crop = "Wheat"
+            elif avg_spot_area > 4000.0 and lesion_ratio > 20.0 and yellow_ratio < 0.20:
+                # Large necrotic rotting patches without strong yellow chlorosis -> Potato
+                target_crop = "Potato"
             else:
                 target_crop = "Tomato"
 
-        # Step 2: Probabilistic Scoring across 34 Classes
+        # Step 2: Strict Crop Matching if User selected a specific crop (e.g. Corn, Tomato, Cotton, Wheat)
+        if target_crop and target_crop != "Auto-Detect":
+            def crop_matches(c_crop_name: str, target_name: str) -> bool:
+                c_low = c_crop_name.lower()
+                t_low = target_name.lower()
+                if t_low in c_low or c_low in t_low:
+                    return True
+                if ("corn" in t_low or "maize" in t_low) and ("corn" in c_low or "maize" in c_low):
+                    return True
+                return False
+
+            candidate_labels = [c for c in self.labels if crop_matches(c["crop"], target_crop)]
+            if not candidate_labels:
+                candidate_labels = self.labels
+        else:
+            candidate_labels = self.labels
+
+        # Step 3: Probabilistic Scoring across candidate classes
         scores = {}
-        for c in self.labels:
+        for c in candidate_labels:
             c_id = c["id"]
             c_crop = c["crop"]
             c_type = c["type"]
             c_disease = c["disease"]
 
-            score = 10.0
-
-            # Crop Alignment Prior
-            if target_crop and target_crop != "Auto-Detect":
-                if c_crop.lower() == target_crop.lower():
-                    score += 65.0
-                else:
-                    score -= 45.0
+            score = 20.0
 
             # Pathology Profile Compatibility
             if c_type == "Healthy":
-                if lesion_ratio < 4.0 and yellow_ratio < 0.06 and spot_count < 5:
+                if lesion_ratio < 4.0 and yellow_ratio < 0.06 and spot_count < 5 and void_holes == 0 and notch_count == 0:
                     score += 55.0 + (green_ratio * 40.0)
                 else:
-                    score -= (lesion_ratio * 3.5)
+                    score -= (lesion_ratio * 3.5) + (void_holes * 40.0) + (notch_count * 25.0)
 
             elif c_type == "Pest":
                 if "Spider Mite" in c_disease:
                     if yellow_ratio > 0.10 and spot_count > 15 and avg_spot_area < 50:
-                        score += 50.0
+                        score += 65.0
                 else:
                     if void_holes >= 1:
-                        score += 55.0 + (void_holes * 15.0)
+                        score += 65.0 + (void_holes * 15.0)
                     if notch_count >= 1:
-                        score += 25.0
+                        score += 35.0
 
             elif c_type == "Bacterial":
                 if spot_count >= 8 and avg_spot_area < 450:
@@ -268,50 +294,66 @@ class EdgeVisionEngine:
                     if water_soaked_ratio > 0.15:
                         score += 20.0
                 elif "Blight" in c_disease and water_soaked_ratio > 0.18 and lesion_ratio > 8.0:
-                    score += 45.0
+                    score += 48.0
 
             elif c_type == "Viral":
-                if yellow_ratio > 0.12:
-                    score += 48.0 + (yellow_ratio * 60.0)
+                if yellow_ratio > 0.15:
+                    score += 65.0 + (yellow_ratio * 50.0)
                 if spot_count < 8:
-                    score += 15.0
+                    score += 20.0
 
             elif c_type in ["Fungal", "Oomycete"]:
-                if "Early Blight" in c_disease:
+                if "Rust" in c_disease:
+                    if (spot_count >= 10 and avg_spot_area < 450) or (rust_ratio > 0.02 and spot_count >= 8):
+                        score += 68.0
+                    elif rust_ratio > 0.04:
+                        score += 45.0
+                elif "Northern Leaf Blight" in c_disease:
+                    # Elongated elliptical lesions on Corn (large spot area, lower count)
+                    if avg_spot_area > 1000.0 or (lesion_ratio > 7.0 and spot_count <= 6):
+                        score += 70.0
+                    elif lesion_ratio > 6.0:
+                        score += 55.0
+                elif "Cercospora" in c_disease or "Gray Leaf Spot" in c_disease:
+                    # Blocky rectangular leaf spots on Corn
+                    if spot_count in range(2, 12) and avg_spot_area in range(120, 950):
+                        score += 65.0
+                    elif spot_count >= 2 and lesion_ratio > 4.0:
+                        score += 52.0
+                elif "Early Blight" in c_disease:
                     if spot_count >= 2 and concentric_score > 1800.0:
                         score += 62.0
                     elif 7.0 <= lesion_ratio <= 35.0 and spot_count in range(2, 18):
                         score += 38.0
                 elif "Late Blight" in c_disease:
-                    # Massive expanding single/double rotting blight patch
                     if spot_count <= 2 and avg_spot_area > 6000.0:
                         score += 65.0
                     elif lesion_ratio > 22.0 or (avg_spot_area > 1500 and spot_count <= 3):
                         score += 55.0
-                elif "Rust" in c_disease:
-                    if rust_ratio > 0.04:
+                elif "Brown Spot" in c_disease:
+                    if spot_count >= 3 and lesion_ratio > 4.0:
                         score += 55.0
                 elif "Powdery Mildew" in c_disease:
                     if yellow_ratio > 0.08 and lesion_ratio < 20.0:
-                        score += 30.0
+                        score += 35.0
                 elif "Spot" in c_disease or "Scab" in c_disease:
                     if spot_count >= 3:
-                        score += 32.0
+                        score += 35.0
                 else:
                     if lesion_ratio > 5.0:
-                        score += 22.0
+                        score += 25.0
 
             scores[c_id] = score
 
         sorted_candidates = sorted(scores.items(), key=lambda x: x[1], reverse=True)
         best_id, best_score = sorted_candidates[0]
-        second_id, second_score = sorted_candidates[1]
+        second_id, second_score = sorted_candidates[1] if len(sorted_candidates) > 1 else (best_id, best_score)
 
         diff = max(best_score - second_score, 0.0)
         confidence = round(91.5 + 7.0 * (1.0 / (1.0 + np.exp(-diff / 10.0))), 1)
 
         best_class = self.class_lookup[best_id]
-        second_class = self.class_lookup[second_id]
+        second_class = self.class_lookup[second_id] if second_id != best_id else None
 
         return best_class, confidence, second_class
 
@@ -326,7 +368,7 @@ class EdgeVisionEngine:
         Args:
             image_input: File path (str), numpy array (RGB), or image bytes.
             class_hint: Exact scenario key (for instant demos).
-            crop_filter: Selected target crop filter (e.g. Cotton, Tomato, Rice).
+            crop_filter: Selected target crop filter (e.g. Cotton, Tomato, Rice, Corn).
         """
         t0 = time.perf_counter()
 
@@ -358,7 +400,10 @@ class EdgeVisionEngine:
         second_class = None
         confidence = 94.0
 
-        if class_hint:
+        # If user explicitly selected a crop filter (e.g. Corn, Tomato, Cotton), ALWAYS diagnose for that crop!
+        if crop_filter and crop_filter != "Auto-Detect":
+            matched_class, confidence, second_class = self.classify_botanical_pathology(features, crop_hint=crop_filter)
+        elif class_hint:
             clean_hint = class_hint.lower().replace("-", "_").replace(" ", "_")
             for c in self.labels:
                 name_key = f"{c['crop']}_{c['disease']}".lower().replace("-", "_").replace(" ", "_")
@@ -414,8 +459,12 @@ def create_sample_leaf_image(scenario: str = "tomato_early_blight", width: int =
         cv2.ellipse(img, (center[0] - 65, center[1] - 15), (35, 75), -40, 0, 360, (48, 155, 60), -1)
         cv2.ellipse(img, (center[0] + 65, center[1] - 15), (35, 75), 40, 0, 360, (48, 155, 60), -1)
     elif "wheat" in scenario or "rice" in scenario:
-        # Long slender blade
-        axes = (width // 5, height // 2 - 10)
+        # Ultra-slender cereal grass blade (Wheat, Rice: aspect ratio > 3.2)
+        axes = (width // 9 + 4, height // 2 - 10)
+        cv2.ellipse(img, center, axes, 8, 0, 360, (45, 160, 55), -1)
+    elif "corn" in scenario or "maize" in scenario:
+        # Monocot strap blade (Corn, Maize: aspect ratio ~ 2.2)
+        axes = (width // 5 + 5, height // 2 - 10)
         cv2.ellipse(img, center, axes, 10, 0, 360, (45, 160, 55), -1)
     else:
         # Ovate / Pinnate tomato-potato leaf
@@ -481,7 +530,7 @@ def create_sample_leaf_image(scenario: str = "tomato_early_blight", width: int =
     # =========================================================================
     # 6. FUNGAL POWDERY RUST (Corn Rust)
     # =========================================================================
-    elif scenario == "corn_rust":
+    elif scenario in ["corn_rust", "corn_common_rust"]:
         np.random.seed(42)
         for _ in range(45):
             rx = int(np.random.normal(center[0], 28))
@@ -489,6 +538,15 @@ def create_sample_leaf_image(scenario: str = "tomato_early_blight", width: int =
             if 40 < rx < width - 40 and 40 < ry < height - 40:
                 cv2.circle(img, (rx, ry), 5, (225, 170, 35), -1)
                 cv2.circle(img, (rx, ry), 3, (155, 75, 15), -1)
+
+    # =========================================================================
+    # 6b. CORN NORTHERN LEAF BLIGHT
+    # =========================================================================
+    elif scenario in ["corn_leaf_blight", "corn_northern_blight"]:
+        cv2.ellipse(img, (center[0] - 10, center[1] - 40), (14, 65), 10, 0, 360, (190, 180, 55), -1)
+        cv2.ellipse(img, (center[0] - 10, center[1] - 40), (9, 50), 10, 0, 360, (110, 85, 30), -1)
+        cv2.ellipse(img, (center[0] + 15, center[1] + 50), (16, 75), 10, 0, 360, (190, 180, 55), -1)
+        cv2.ellipse(img, (center[0] + 15, center[1] + 50), (10, 60), 10, 0, 360, (100, 80, 25), -1)
 
     # =========================================================================
     # 7. OOMYCETE ROTTING BLIGHT (Late Blight)

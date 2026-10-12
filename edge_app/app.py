@@ -10,6 +10,7 @@ import time
 import numpy as np
 import cv2
 import base64
+import hashlib
 import streamlit as st
 import streamlit.components.v1 as components
 
@@ -76,6 +77,8 @@ UI_CONTENT = {
         "tab_camera": "📸 कैमरे से फोटो खींचें",
         "tab_upload": "📁 गैलरी / फोन से फोटो चुनें",
         "sample_btn_labels": {
+            "corn_leaf_blight": "🌽 मक्का (पत्ती झुलसा रोग)",
+            "corn_rust": "🌽 मक्का (कॉमन रतुआ/रस्ट)",
             "tomato_bacterial_spot": "🦠 टमाटर (जीवाणु धब्बा)",
             "tomato_yellow_leaf_curl": "🧬 टमाटर (पत्ता मरोड़ वायरस)",
             "cotton_bollworm": "🐛 कपास (सुंडी / कीट प्रकोप)",
@@ -138,6 +141,8 @@ UI_CONTENT = {
         "tab_camera": "📸 Live Camera Scan",
         "tab_upload": "📁 Upload Leaf Photo",
         "sample_btn_labels": {
+            "corn_leaf_blight": "🌽 Corn (Leaf Blight)",
+            "corn_rust": "🌽 Corn (Common Rust)",
             "tomato_bacterial_spot": "🦠 Tomato (Bacterial Spot)",
             "tomato_yellow_leaf_curl": "🧬 Tomato (Yellow Leaf Curl)",
             "cotton_bollworm": "🐛 Cotton (Bollworm Pest)",
@@ -257,13 +262,15 @@ with st.sidebar.expander(T["telemetry_sidebar_header"], expanded=True):
 if "source_type" not in st.session_state:
     st.session_state["source_type"] = "sample"
 if "sample_name" not in st.session_state:
-    st.session_state["sample_name"] = "tomato_early_blight"
+    st.session_state["sample_name"] = "corn_leaf_blight"
 if "active_image_rgb" not in st.session_state:
-    st.session_state["active_image_rgb"] = create_sample_leaf_image("tomato_early_blight")
-if "last_upload_id" not in st.session_state:
-    st.session_state["last_upload_id"] = None
-if "last_cam_id" not in st.session_state:
-    st.session_state["last_cam_id"] = None
+    st.session_state["active_image_rgb"] = create_sample_leaf_image("corn_leaf_blight")
+if "last_upload_hash" not in st.session_state:
+    st.session_state["last_upload_hash"] = None
+if "last_cam_hash" not in st.session_state:
+    st.session_state["last_cam_hash"] = None
+if "uploader_key_version" not in st.session_state:
+    st.session_state["uploader_key_version"] = 0
 
 # Top Header
 st.markdown(f"""
@@ -392,28 +399,51 @@ c_audio_box, c_audio_desc = st.columns([1, 1])
 with c_audio_box:
     audio_bytes = res.get("audio_bytes")
     audio_mime = res.get("audio_mime", "audio/mp3")
+    spoken_txt = adv.get("audio_speech_text", "")
+    spoken_js_escaped = spoken_txt.replace('"', '\\"').replace("'", "\\'").replace('\n', ' ')
+    tts_lang = "hi-IN" if selected_lang == "hindi" else "en-US"
+    play_label = "▶️ " + ("आवाज़ में पूरी सलाह सुनें (Play Audio)" if selected_lang == "hindi" else "Play Spoken Advisory")
+    read_label = "🗣️ " + ("बोलकर सुनाएं (Read Aloud)" if selected_lang == "hindi" else "Read Aloud (TTS)")
+
     if audio_bytes and len(audio_bytes) > 0:
         audio_b64 = base64.b64encode(audio_bytes).decode("utf-8")
-        btn_label = "🔊 आवाज़ में पूरी सलाह सुनें (Play Spoken Advisory)" if selected_lang == "hindi" else "🔊 Listen to Complete Spoken Advisory"
         player_html = f"""
         <div style="background: #f0fdf4; border: 2px solid #22c55e; border-radius: 12px; padding: 14px 18px; margin-bottom: 8px; font-family: system-ui, -apple-system, sans-serif;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-                <button id="playBtn" onclick="togglePlay()" style="
-                    background: linear-gradient(135deg, #15803d, #166534);
-                    color: white;
-                    border: none;
-                    padding: 10px 22px;
-                    font-size: 15px;
-                    font-weight: 700;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 8px;
-                    box-shadow: 0 4px 12px rgba(21, 128, 61, 0.35);
-                ">
-                    ▶️ {btn_label}
-                </button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button id="playBtn" onclick="togglePlay()" style="
+                        background: linear-gradient(135deg, #15803d, #166534);
+                        color: white;
+                        border: none;
+                        padding: 9px 18px;
+                        font-size: 14px;
+                        font-weight: 700;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        box-shadow: 0 3px 10px rgba(21, 128, 61, 0.3);
+                    ">
+                        {play_label}
+                    </button>
+                    <button id="ttsBtn" onclick="speakBrowser()" style="
+                        background: linear-gradient(135deg, #0284c7, #0369a1);
+                        color: white;
+                        border: none;
+                        padding: 9px 18px;
+                        font-size: 14px;
+                        font-weight: 700;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        box-shadow: 0 3px 10px rgba(2, 132, 199, 0.3);
+                    ">
+                        {read_label}
+                    </button>
+                </div>
                 <span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">
                     🔒 100% Offline Edge Audio
                 </span>
@@ -433,17 +463,26 @@ with c_audio_box:
                     btn.style.background = 'linear-gradient(135deg, #b91c1c, #991b1b)';
                 }} else {{
                     audio.pause();
-                    btn.innerHTML = '▶️ {btn_label}';
+                    btn.innerHTML = '{play_label}';
                     btn.style.background = 'linear-gradient(135deg, #15803d, #166534)';
                 }}
             }}
             audio.onended = function() {{
-                btn.innerHTML = '▶️ {btn_label}';
+                btn.innerHTML = '{play_label}';
                 btn.style.background = 'linear-gradient(135deg, #15803d, #166534)';
             }};
+            function speakBrowser() {{
+                if ('speechSynthesis' in window) {{
+                    window.speechSynthesis.cancel();
+                    var utter = new SpeechSynthesisUtterance("{spoken_js_escaped}");
+                    utter.lang = "{tts_lang}";
+                    utter.rate = 0.92;
+                    window.speechSynthesis.speak(utter);
+                }}
+            }}
         </script>
         """
-        components.html(player_html, height=135)
+        components.html(player_html, height=140)
         st.audio(audio_bytes, format=audio_mime)
     else:
         st.warning("ऑडियो स्ट्रीम तैयार हो रही है..." if selected_lang == "hindi" else "Audio advisory is synthesizing...")
@@ -514,8 +553,9 @@ tab_sample, tab_cam, tab_upload = st.tabs([
 
 with tab_sample:
     st.markdown(" ")
-    btn_cols = st.columns(6)
     samples_list = [
+        ("corn_leaf_blight", T["sample_btn_labels"]["corn_leaf_blight"]),
+        ("corn_rust", T["sample_btn_labels"]["corn_rust"]),
         ("tomato_bacterial_spot", T["sample_btn_labels"]["tomato_bacterial_spot"]),
         ("tomato_yellow_leaf_curl", T["sample_btn_labels"]["tomato_yellow_leaf_curl"]),
         ("cotton_bollworm", T["sample_btn_labels"]["cotton_bollworm"]),
@@ -523,14 +563,18 @@ with tab_sample:
         ("tomato_late_blight", T["sample_btn_labels"]["tomato_late_blight"]),
         ("healthy_wheat", T["sample_btn_labels"]["healthy_wheat"]),
     ]
+    r1_cols = st.columns(4)
+    r2_cols = st.columns(4)
+    grid_cols = r1_cols + r2_cols
     for idx, (s_key, s_label) in enumerate(samples_list):
-        with btn_cols[idx]:
+        with grid_cols[idx]:
             if st.button(s_label, key=f"btn_sample_{s_key}", use_container_width=True):
                 st.session_state["source_type"] = "sample"
                 st.session_state["sample_name"] = s_key
                 st.session_state["active_image_rgb"] = create_sample_leaf_image(s_key)
-                st.session_state["last_upload_id"] = None
-                st.session_state["last_cam_id"] = None
+                st.session_state["last_upload_hash"] = None
+                st.session_state["last_cam_hash"] = None
+                st.session_state["uploader_key_version"] = st.session_state.get("uploader_key_version", 0) + 1
                 st.rerun()
 
 with tab_cam:
@@ -538,34 +582,49 @@ with tab_cam:
     cam_snap = st.camera_input(T["camera_input_label"], key="camera_widget_key")
     if cam_snap is not None:
         raw_cam_bytes = cam_snap.getvalue()
-        current_cam_id = f"cam_{len(raw_cam_bytes)}"
-        if current_cam_id != st.session_state.get("last_cam_id") and len(raw_cam_bytes) > 0:
+        cam_hash = hashlib.md5(raw_cam_bytes).hexdigest()
+        if cam_hash != st.session_state.get("last_cam_hash") and len(raw_cam_bytes) > 0:
             try:
                 file_bytes = np.asarray(bytearray(raw_cam_bytes), dtype=np.uint8)
                 img_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
                 if img_bgr is not None:
                     st.session_state["active_image_rgb"] = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
                     st.session_state["source_type"] = "camera"
-                    st.session_state["last_cam_id"] = current_cam_id
+                    st.session_state["sample_name"] = None
+                    st.session_state["last_cam_hash"] = cam_hash
+                    st.session_state["uploader_key_version"] = st.session_state.get("uploader_key_version", 0) + 1
                     st.rerun()
             except Exception:
                 pass
 
 with tab_upload:
     st.markdown(" ")
-    uploaded_file = st.file_uploader(T["upload_input_label"], type=["jpg", "jpeg", "png"], key="uploader_widget_key")
+    uploader_key = f"uploader_widget_{st.session_state.get('uploader_key_version', 0)}"
+    uploaded_file = st.file_uploader(T["upload_input_label"], type=["jpg", "jpeg", "png"], key=uploader_key)
     if uploaded_file is not None:
-        current_up_id = f"{uploaded_file.name}_{uploaded_file.size}"
-        if current_up_id != st.session_state.get("last_upload_id"):
+        raw_bytes = uploaded_file.getvalue()
+        file_hash = hashlib.md5(raw_bytes).hexdigest()
+        if file_hash != st.session_state.get("last_upload_hash") and len(raw_bytes) > 0:
             try:
-                raw_bytes = uploaded_file.getvalue()
-                if len(raw_bytes) > 0:
-                    file_bytes = np.asarray(bytearray(raw_bytes), dtype=np.uint8)
-                    img_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-                    if img_bgr is not None:
-                        st.session_state["active_image_rgb"] = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-                        st.session_state["source_type"] = "upload"
-                        st.session_state["last_upload_id"] = current_up_id
-                        st.rerun()
+                file_bytes = np.asarray(bytearray(raw_bytes), dtype=np.uint8)
+                img_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+                if img_bgr is not None:
+                    st.session_state["active_image_rgb"] = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+                    st.session_state["source_type"] = "upload"
+                    st.session_state["sample_name"] = None
+                    st.session_state["last_upload_hash"] = file_hash
+                    st.rerun()
             except Exception:
                 pass
+
+        c_u1, c_u2 = st.columns([3, 1])
+        with c_u1:
+            st.success("✅ " + ("पत्ती की फोटो सफलतापूर्वक लोड हो गई है!" if selected_lang == "hindi" else "Leaf photo loaded successfully!"))
+        with c_u2:
+            if st.button("🗑️ " + ("अपलोड हटाएं (Clear)" if selected_lang == "hindi" else "Clear Upload"), key="btn_clear_upload"):
+                st.session_state["uploader_key_version"] = st.session_state.get("uploader_key_version", 0) + 1
+                st.session_state["last_upload_hash"] = None
+                st.session_state["source_type"] = "sample"
+                st.session_state["sample_name"] = "corn_leaf_blight"
+                st.session_state["active_image_rgb"] = create_sample_leaf_image("corn_leaf_blight")
+                st.rerun()
